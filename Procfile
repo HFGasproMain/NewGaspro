@@ -1,0 +1,1 @@
+web: gunicorn gaspro_sme.wsgi --log-file -

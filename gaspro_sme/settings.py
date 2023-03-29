@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-15&oin_8(p6mf!qtu7i^rq%l)-z4^k3e%2b^-c8ear%64rf#a9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['hfv2-test.up.railway.app']
 
 
 # Application definition
@@ -48,12 +48,15 @@ INSTALLED_APPS = [
     
     # Dependencies
     'rest_framework',
+    'corsheaders',
     #'rest_framework_simplejwt'
 
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
