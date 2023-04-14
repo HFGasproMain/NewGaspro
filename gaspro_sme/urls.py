@@ -16,6 +16,10 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+# from rest_framework_swagger.views import get_swagger_view
+# from rest_framework.schemas import get_schema_view
+# from rest_framework.documentation import include_docs_urls
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -25,4 +29,14 @@ urlpatterns = [
     path('api/v2/billings/', include('billing.urls')),
     path('api/v2/meter-readings/', include('meter_readings.urls')),
     path('api/v2/orders/', include('orders.urls')),
+    path('api/v2/retailers/', include('retailers.urls')),
+
+    # Default Auth
+    path('api/v2/api-auth/', include('rest_framework.urls')),
+    path('api/v2/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/v2/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+
+    #path('swagger-docs/', schema_view),
+    #path('docs/', include_docs_urls(title='HFV2 APIs')),
+    #path('schema/', schema_view),
 ]

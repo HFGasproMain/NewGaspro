@@ -1,25 +1,56 @@
 from django.db import models
 
-from account.models import User
-from cylinder.models import Cylinder
-from delivery.models import Delivery
+from accounts.models import User
+#from cylinder.models import Cylinder
+#from delivery.models import Delivery
 
 
-class Retailer(models.Model):
-    user = models.OneToOneField(
-        User, on_delete=models.CASCADE, related_name="retailer_user"
+lagos_lga = (
+        ('Agege', 'Agege'),
+        ('Ajeromi-Ifelodun', 'Ajeromi-Ifelodun'),
+        ('Alimosho', 'Alimosho'),
+        ('Apapa', 'Apapa'),
+        ('Amuwo-Odofin', 'Amuwo-Odofin'),
+        ('Badagry', 'Badagry'),
+        ('Epe','Epe'),
+        ('Eti-Osa', 'Eti-Osa'),
+        ('Ibeju-Lekki','Ibeju-Lekki'),
+        ('Ifako-Ijaiye','Ifako-Ijaiye'),
+        ('Ikeja','Ikeja'),
+        ('Ikorodu','Ikorodu'),
+        ('Kosofe','Kosofe'),
+        ('Lagos Island','Lagos Island'),
+        ('Lagos Mainland','Lagos Mainland'),
+        ('Mushin','Mushin'),
+        ('Ojo','Ojo'),
+        ('Oshodi-Isolo','Oshodi-Isolo'),
+        ('Somolu','Somolu'),
+        ('Surulere','Surulere'),
     )
-    business_name = models.CharField(max_length=30)
-    business_address = models.CharField(max_length=50)
-    business_phone_number = models.CharField(max_length=11, null=True, blank=True)
+
+
+class Retailers(models.Model):
+    #user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="retailer")
+    first_name = models.CharField(max_length=60, blank=True)
+    last_name = models.CharField(max_length=60, blank=True)
+    email = models.CharField(max_length=60, blank=True, null=True)
+    business_name = models.CharField(max_length=100, unique=True)
+    business_address = models.TextField(null=True)
+    business_lga = models.CharField(max_length=60, choices=lagos_lga)
+    business_state = models.CharField(max_length=100, null=True)
+    business_phone_number = models.CharField(max_length=11, unique=True, null=True, blank=True)
     image = models.CharField(max_length=200)
     first_reference = models.CharField(max_length=30)
     second_reference = models.CharField(max_length=30)
     is_online = models.BooleanField(default=True)
+    date_added = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        # return "%s %s" % (self.first_name, self.last_name)
-        return str(self.id)
+        return str(self.business_name)
+
+    class Meta:
+        ordering = ('-business_lga',)
+
 
 
 CYLINDER_STATUS = (("PRE-FILLED", "PRE-FILLED"), ("EMPTY", "EMPTY"))
@@ -44,7 +75,7 @@ RETURN_DESTINATION = (
     ("STORE_TWO", "STORE_TWO"),
 )
 
-
+'''
 class RetailerStock(models.Model):
     issuer = models.CharField(
         max_length=30, choices=ISSUING_LPG_STORE, default="IYANA-IPAJA"
@@ -106,30 +137,32 @@ class RetailerStock(models.Model):
         ordering = ["-id"]
 
 
-class CylinderWeightTrack(models.Model):
-    cylinder_id = models.CharField(max_length=30)
-    current_weight = models.CharField(max_length=30, null=True, blank=True)
-    cylinder_capacity = models.CharField(max_length=30, null=True, blank=True)
-    tare_weight = models.CharField(max_length=30, null=True, blank=True)
-    filled_gas_weight = models.CharField(max_length=30, null=True, blank=True)
-    date_created = models.DateTimeField(auto_now_add=True)
+# class CylinderWeightTrack(models.Model):
+#     cylinder_id = models.CharField(max_length=30)
+#     current_weight = models.CharField(max_length=30, null=True, blank=True)
+#     cylinder_capacity = models.CharField(max_length=30, null=True, blank=True)
+#     tare_weight = models.CharField(max_length=30, null=True, blank=True)
+#     filled_gas_weight = models.CharField(max_length=30, null=True, blank=True)
+#     date_created = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return str(self.cylinder_id)
+#     def __str__(self):
+#         return str(self.cylinder_id)
 
-    class Meta:
-        ordering = ["-id"]
+#     class Meta:
+#         ordering = ["-id"]
 
 
-class UpdateCylinderWeight(models.Model):
-    cylinder_id = models.CharField(max_length=30)
-    new_current_weight = models.CharField(max_length=30, null=True, blank=True)
-    previous_weight = models.CharField(max_length=30, null=True, blank=True)
-    filled_gas_weight = models.CharField(max_length=30, null=True, blank=True)
-    date_created = models.DateTimeField(auto_now_add=True)
+# class UpdateCylinderWeight(models.Model):
+#     cylinder_id = models.CharField(max_length=30)
+#     new_current_weight = models.CharField(max_length=30, null=True, blank=True)
+#     previous_weight = models.CharField(max_length=30, null=True, blank=True)
+#     filled_gas_weight = models.CharField(max_length=30, null=True, blank=True)
+#     date_created = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return str(self.cylinder_id)
+#     def __str__(self):
+#         return str(self.cylinder_id)
 
-    class Meta:
-        ordering = ["-id"]
+#     class Meta:
+#         ordering = ["-id"]
+
+'''

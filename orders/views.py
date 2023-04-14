@@ -2,12 +2,13 @@ from django.shortcuts import render
 from .models import OnboardingOrder
 from accounts.models import User
 from billing.models import OrderOnboardBilling
-from .serializers import OnboardingOrderSerializer, OnboardingOrderListSerializer
+from .serializers import OnboardingOrderSerializer, OnboardedOrderListSerializer
 from rest_framework import generics, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
+from .pagination import LargeResultsSetPagination
 import time
 
 # Create your views here.
@@ -41,8 +42,9 @@ class OnboardingOrderCreateView(generics.CreateAPIView):
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class OnboardingOrderListView(generics.ListAPIView):
+class OnboardedOrderListView(generics.ListAPIView):
 	""" API To List All Onboarded User Orders """
 	queryset = OnboardingOrder.objects.all()
-	serializer_class = OnboardingOrderListSerializer
+	serializer_class = OnboardedOrderListSerializer
+	pagination_class = LargeResultsSetPagination
 			

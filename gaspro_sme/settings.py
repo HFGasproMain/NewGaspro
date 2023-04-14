@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-15&oin_8(p6mf!qtu7i^rq%l)-z4^k3e%2b^-c8ear%64rf#a9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['hfv2-test.up.railway.app']
+ALLOWED_HOSTS = ['*', 'hfv2-test.up.railway.app']
 
 
 # Application definition
@@ -44,11 +44,14 @@ INSTALLED_APPS = [
     'asset',
     'billing',
     'meter_readings',
+    'retailers',
     'orders',
     
     # Dependencies
     'rest_framework',
     'corsheaders',
+    'drf_spectacular',
+    #'rest_framework_swagger',
     #'rest_framework_simplejwt'
 
 ]
@@ -109,12 +112,34 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
 ]
 
+# Spectacular Customization
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Homefort Product App Version 2',
+    'DESCRIPTION': 'An API for the Homefort retail & sme; second version',
+    'VERSION':'2.0.0',
+    'SCHEMA_PATH_PREFIX':'/api/v2',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'COMPONENT_SPLIT_REQUEST': True,
+    
+
+}
+
 # JWT Config 
 REST_FRAMEWORK = {
     
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),
+
+    #'DEFAULT_SCHEMA_CLASS':('rest_framework.schemas.coreapi.AutoSchema'),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+
+    'DEFAULT_PERMISSION_CLASSES': [
+        #'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.IsAuthenticated',
+    ]
+
 }
 
 # Auth User

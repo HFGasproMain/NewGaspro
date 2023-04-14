@@ -36,7 +36,7 @@ class OnboardingOrderSerializer(serializers.ModelSerializer):
 			return order
 
 
-class OnboardingOrderListSerializer(serializers.ModelSerializer):
+class OnboardedOrderListSerializer(serializers.ModelSerializer):
 	# customer = serializers.PrimaryKeyRelatedField(queryset=User.objects.filter(role=5))
 	# cylinder_type = serializers.CharField(max_length=50)
 	# billing_details = OnboardOrderSerializer()

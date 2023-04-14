@@ -52,5 +52,7 @@ class OnboardingOrder(models.Model):
 	# 	if cylinder_type = 'new_cylinder':
 	# 		return Decimal(self.)
 
-			
 
+
+class BottleSwapOrder(models.Model):
+	pass

@@ -1,0 +1,2958 @@
+openapi: 3.0.3
+info:
+  title: 'Homefort V2'
+  version: 2.0.0
+  developer: 'Damilare Samuel'
+paths:
+  /api/v2/accounts/admin-register/:
+    post:
+      operationId: api_v2_accounts_admin_register_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffUserRegistration'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffUserRegistration'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffUserRegistration'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffUserRegistration'
+          description: ''
+  /api/v2/accounts/admin-users/:
+    get:
+      operationId: api_v2_accounts_admin_users_retrieve
+      description: Admin List View
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserList'
+          description: ''
+  /api/v2/accounts/admin/login:
+    post:
+      operationId: api_v2_accounts_admin_login_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminLogin'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AdminLogin'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AdminLogin'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminLogin'
+          description: ''
+  /api/v2/accounts/delete-user/{user_id}:
+    delete:
+      operationId: api_v2_accounts_delete_user_destroy
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/v2/accounts/delivery-register/:
+    post:
+      operationId: api_v2_accounts_delivery_register_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffUserRegistration'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffUserRegistration'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffUserRegistration'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffUserRegistration'
+          description: ''
+  /api/v2/accounts/delivery-users/:
+    get:
+      operationId: api_v2_accounts_delivery_users_retrieve
+      description: Delivery List View
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserList'
+          description: ''
+  /api/v2/accounts/login/:
+    post:
+      operationId: api_v2_accounts_login_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserLogin'
+          description: ''
+  /api/v2/accounts/operations-register/:
+    post:
+      operationId: api_v2_accounts_operations_register_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffUserRegistration'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffUserRegistration'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffUserRegistration'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffUserRegistration'
+          description: ''
+  /api/v2/accounts/ops-delivery/:
+    get:
+      operationId: api_v2_accounts_ops_delivery_retrieve
+      description: Returns a List of Operations & Delivery Staff
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OpsDelivery'
+          description: ''
+  /api/v2/accounts/retail/clients/:
+    get:
+      operationId: api_v2_accounts_retail_clients_retrieve
+      description: SME Customers List View
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserList'
+          description: ''
+  /api/v2/accounts/retail/register/:
+    post:
+      operationId: api_v2_accounts_retail_register_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResidentUserRegistration'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ResidentUserRegistration'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ResidentUserRegistration'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResidentUserRegistration'
+          description: ''
+  /api/v2/accounts/sme/clients/:
+    get:
+      operationId: api_v2_accounts_sme_clients_retrieve
+      description: SME Customers List View
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SME2List'
+          description: ''
+  /api/v2/accounts/sme/register/:
+    post:
+      operationId: api_v2_accounts_sme_register_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SMEUserRegistration'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SMEUserRegistration'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SMEUserRegistration'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SMEUserRegistration'
+          description: ''
+  /api/v2/accounts/token/obtain/:
+    post:
+      operationId: api_v2_accounts_token_obtain_create
+      description: |-
+        Takes a set of user credentials and returns an access and refresh JSON web
+        token pair to prove the authentication of those credentials.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenObtainPair'
+          description: ''
+  /api/v2/accounts/token/refresh/:
+    post:
+      operationId: api_v2_accounts_token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /api/v2/accounts/update-profile/{user_id}:
+    get:
+      operationId: api_v2_accounts_update_profile_retrieve
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserUpdate'
+          description: ''
+    put:
+      operationId: api_v2_accounts_update_profile_update
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserUpdate'
+          description: ''
+    patch:
+      operationId: api_v2_accounts_update_profile_partial_update
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserUpdate'
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserUpdate'
+          description: ''
+  /api/v2/accounts/user-profile/{user_id}:
+    get:
+      operationId: api_v2_accounts_user_profile_retrieve
+      description: User Profile View
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v2/accounts/users/:
+    get:
+      operationId: api_v2_accounts_users_retrieve
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserList'
+          description: ''
+  /api/v2/assets/assigned-cylinders/retail/:
+    get:
+      operationId: api_v2_assets_assigned_cylinders_retail_list
+      description: All Retail Users Assigned Cylinders
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RetailAssignCylinder'
+          description: ''
+  /api/v2/assets/assigned-cylinders/sme/:
+    get:
+      operationId: api_v2_assets_assigned_cylinders_sme_list
+      description: All SME Assigned Cylinders
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SMEAssignCylinder'
+          description: ''
+  /api/v2/assets/cylinder-create/:
+    post:
+      operationId: api_v2_assets_cylinder_create_create
+      description: Create Unassigned Cylinder
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Cylinder'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Cylinder'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Cylinder'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cylinder'
+          description: ''
+  /api/v2/assets/cylinder-onboard/retail/:
+    post:
+      operationId: api_v2_assets_cylinder_onboard_retail_create
+      description: Onboard A Cylinder To A Retail User
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RetailAssignCylinder'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RetailAssignCylinder'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RetailAssignCylinder'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetailAssignCylinder'
+          description: ''
+  /api/v2/assets/cylinder-onboard/sme/:
+    post:
+      operationId: api_v2_assets_cylinder_onboard_sme_create
+      description: Onboard A Cylinder To A SME User
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SMEAssignCylinder'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SMEAssignCylinder'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SMEAssignCylinder'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SMEAssignCylinder'
+          description: ''
+  /api/v2/assets/cylinder/{cylinder}/:
+    get:
+      operationId: api_v2_assets_cylinder_retrieve
+      description: Cylinder Detail View
+      parameters:
+      - in: path
+        name: cylinder
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v2/assets/cylinders/:
+    get:
+      operationId: api_v2_assets_cylinders_list
+      description: All Cylinders
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CylinderList'
+          description: ''
+  /api/v2/assets/delete-cylinder/{cylinder_serial_number}/:
+    get:
+      operationId: api_v2_assets_delete_cylinder_retrieve
+      description: DELETE API for the Unassigned Cylinder
+      parameters:
+      - in: path
+        name: cylinder_serial_number
+        schema:
+          type: string
+        description: A unique value identifying this cylinder.
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cylinder'
+          description: ''
+    delete:
+      operationId: api_v2_assets_delete_cylinder_destroy
+      description: DELETE API for the Unassigned Cylinder
+      parameters:
+      - in: path
+        name: cylinder_serial_number
+        schema:
+          type: string
+        description: A unique value identifying this cylinder.
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/v2/assets/delete-smartbox/{box_id}:
+    get:
+      operationId: api_v2_assets_delete_smartbox_retrieve
+      description: Delete Smart Box View
+      parameters:
+      - in: path
+        name: box_id
+        schema:
+          type: string
+        description: A unique value identifying this smart box.
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmartBox'
+          description: ''
+    delete:
+      operationId: api_v2_assets_delete_smartbox_destroy
+      description: Delete Smart Box View
+      parameters:
+      - in: path
+        name: box_id
+        schema:
+          type: string
+        description: A unique value identifying this smart box.
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/v2/assets/delete-smartscale/{scale_id}:
+    get:
+      operationId: api_v2_assets_delete_smartscale_retrieve
+      description: Delete Smart Scale View
+      parameters:
+      - in: path
+        name: scale_id
+        schema:
+          type: string
+        description: A unique value identifying this smart scale.
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmartScale'
+          description: ''
+    delete:
+      operationId: api_v2_assets_delete_smartscale_destroy
+      description: Delete Smart Scale View
+      parameters:
+      - in: path
+        name: scale_id
+        schema:
+          type: string
+        description: A unique value identifying this smart scale.
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/v2/assets/history/assigned-cylinder/{cy_tag_id}/:
+    get:
+      operationId: api_v2_assets_history_assigned_cylinder_list
+      description: |-
+        This view should return a history for
+        the given assigned cyinder of the URL.
+      parameters:
+      - in: path
+        name: cy_tag_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SMEAssignCylinder'
+          description: ''
+  /api/v2/assets/history/assigned-cylinders/{sme_id}/:
+    get:
+      operationId: api_v2_assets_history_assigned_cylinders_list
+      parameters:
+      - in: path
+        name: sme_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SMEAssignCylinder'
+          description: ''
+  /api/v2/assets/smartbox-create/:
+    post:
+      operationId: api_v2_assets_smartbox_create_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SmartBox'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SmartBox'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SmartBox'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmartBox'
+          description: ''
+  /api/v2/assets/smartboxes/:
+    get:
+      operationId: api_v2_assets_smartboxes_list
+      description: Smart Box List View
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SmartBox'
+          description: ''
+  /api/v2/assets/smartscale-create/:
+    post:
+      operationId: api_v2_assets_smartscale_create_create
+      description: Smart Scale Create View
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SmartScale'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SmartScale'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SmartScale'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmartScale'
+          description: ''
+  /api/v2/assets/smartscales/:
+    get:
+      operationId: api_v2_assets_smartscales_list
+      description: Smart Scale List View
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SmartScale'
+          description: ''
+  /api/v2/assets/update-cylinder/{cylinder_serial_number}/:
+    put:
+      operationId: api_v2_assets_update_cylinder_update
+      description: Update API for the Unassigned Cylinder
+      parameters:
+      - in: path
+        name: cylinder_serial_number
+        schema:
+          type: string
+        description: A unique value identifying this cylinder.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Cylinder'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Cylinder'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Cylinder'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cylinder'
+          description: ''
+    patch:
+      operationId: api_v2_assets_update_cylinder_partial_update
+      description: Update API for the Unassigned Cylinder
+      parameters:
+      - in: path
+        name: cylinder_serial_number
+        schema:
+          type: string
+        description: A unique value identifying this cylinder.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCylinder'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCylinder'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCylinder'
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cylinder'
+          description: ''
+  /api/v2/assets/update-smartbox/{box_id}:
+    put:
+      operationId: api_v2_assets_update_smartbox_update
+      description: Update Smart Box View
+      parameters:
+      - in: path
+        name: box_id
+        schema:
+          type: string
+        description: A unique value identifying this smart box.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SmartBox'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SmartBox'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SmartBox'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmartBox'
+          description: ''
+    patch:
+      operationId: api_v2_assets_update_smartbox_partial_update
+      description: Update Smart Box View
+      parameters:
+      - in: path
+        name: box_id
+        schema:
+          type: string
+        description: A unique value identifying this smart box.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSmartBox'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSmartBox'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSmartBox'
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmartBox'
+          description: ''
+  /api/v2/assets/update-smartscale/{scale_id}:
+    put:
+      operationId: api_v2_assets_update_smartscale_update
+      description: Update Smart Scale View
+      parameters:
+      - in: path
+        name: scale_id
+        schema:
+          type: string
+        description: A unique value identifying this smart scale.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SmartScale'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SmartScale'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SmartScale'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmartScale'
+          description: ''
+    patch:
+      operationId: api_v2_assets_update_smartscale_partial_update
+      description: Update Smart Scale View
+      parameters:
+      - in: path
+        name: scale_id
+        schema:
+          type: string
+        description: A unique value identifying this smart scale.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSmartScale'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSmartScale'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSmartScale'
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmartScale'
+          description: ''
+  /api/v2/auxilliary/aux-create/:
+    post:
+      operationId: api_v2_auxilliary_aux_create_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Auxiliary'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Auxiliary'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Auxiliary'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Auxiliary'
+          description: ''
+  /api/v2/auxilliary/aux-delete/{id}/:
+    delete:
+      operationId: api_v2_auxilliary_aux_delete_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v2/auxilliary/aux-update/{id}/:
+    put:
+      operationId: api_v2_auxilliary_aux_update_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Auxiliary'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Auxiliary'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Auxiliary'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Auxiliary'
+          description: ''
+    patch:
+      operationId: api_v2_auxilliary_aux_update_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAuxiliary'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedAuxiliary'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedAuxiliary'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Auxiliary'
+          description: ''
+  /api/v2/auxilliary/aux/{id}/:
+    get:
+      operationId: api_v2_auxilliary_aux_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Auxiliary'
+          description: ''
+  /api/v2/auxilliary/auxlist/:
+    get:
+      operationId: api_v2_auxilliary_auxlist_list
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Auxiliary'
+          description: ''
+  /api/v2/auxilliary/useraux/{customer}/:
+    get:
+      operationId: api_v2_auxilliary_useraux_retrieve
+      parameters:
+      - in: path
+        name: customer
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Auxiliary'
+          description: ''
+    put:
+      operationId: api_v2_auxilliary_useraux_update
+      parameters:
+      - in: path
+        name: customer
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Auxiliary'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Auxiliary'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Auxiliary'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Auxiliary'
+          description: ''
+    patch:
+      operationId: api_v2_auxilliary_useraux_partial_update
+      parameters:
+      - in: path
+        name: customer
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAuxiliary'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedAuxiliary'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedAuxiliary'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Auxiliary'
+          description: ''
+  /api/v2/billings/onboarded-orders/:
+    get:
+      operationId: api_v2_billings_onboarded_orders_list
+      description: API To List All Onboarded Customer Orders
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OnboardOrder'
+          description: ''
+  /api/v2/meter-readings/smartboxreadings/assigned/:
+    get:
+      operationId: api_v2_meter_readings_smartboxreadings_assigned_list
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AssignedSmartBoxReadings'
+          description: ''
+  /api/v2/meter-readings/smartboxreadings/default/:
+    get:
+      operationId: api_v2_meter_readings_smartboxreadings_default_list
+      description: API For Default SmartBox Readings
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SmartBoxReadings'
+          description: ''
+  /api/v2/orders/onboard-order/:
+    post:
+      operationId: api_v2_orders_onboard_order_create
+      description: API For Registered Users Who Want To Subscribe
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OnboardingOrder'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OnboardingOrder'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OnboardingOrder'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnboardingOrder'
+          description: ''
+  /api/v2/orders/onboarded-orders/:
+    get:
+      operationId: api_v2_orders_onboarded_orders_list
+      description: API To List All Onboarded User Orders
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedOnboardedOrderListList'
+          description: ''
+  /api/v2/retailers/{id}/:
+    get:
+      operationId: api_v2_retailers_retrieve
+      description: Retailers Update & Delete API Accessible to Admins Only
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Retailers'
+          description: ''
+    put:
+      operationId: api_v2_retailers_update
+      description: Retailers Update & Delete API Accessible to Admins Only
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Retailers'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Retailers'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Retailers'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Retailers'
+          description: ''
+    patch:
+      operationId: api_v2_retailers_partial_update
+      description: Retailers Update & Delete API Accessible to Admins Only
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedRetailers'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedRetailers'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedRetailers'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Retailers'
+          description: ''
+    delete:
+      operationId: api_v2_retailers_destroy
+      description: Retailers Update & Delete API Accessible to Admins Only
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v2/retailers/all-outlets/:
+    get:
+      operationId: api_v2_retailers_all_outlets_list
+      description: All Established Retailers
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedRetailersListList'
+          description: ''
+  /api/v2/retailers/create-retailer/:
+    post:
+      operationId: api_v2_retailers_create_retailer_create
+      description: Create a Retailer
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Retailers'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Retailers'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Retailers'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Retailers'
+          description: ''
+  /schema/:
+    get:
+      operationId: schema_retrieve
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - yaml
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - af
+          - ar
+          - ar-dz
+          - ast
+          - az
+          - be
+          - bg
+          - bn
+          - br
+          - bs
+          - ca
+          - cs
+          - cy
+          - da
+          - de
+          - dsb
+          - el
+          - en
+          - en-au
+          - en-gb
+          - eo
+          - es
+          - es-ar
+          - es-co
+          - es-mx
+          - es-ni
+          - es-ve
+          - et
+          - eu
+          - fa
+          - fi
+          - fr
+          - fy
+          - ga
+          - gd
+          - gl
+          - he
+          - hi
+          - hr
+          - hsb
+          - hu
+          - hy
+          - ia
+          - id
+          - ig
+          - io
+          - is
+          - it
+          - ja
+          - ka
+          - kab
+          - kk
+          - km
+          - kn
+          - ko
+          - ky
+          - lb
+          - lt
+          - lv
+          - mk
+          - ml
+          - mn
+          - mr
+          - my
+          - nb
+          - ne
+          - nl
+          - nn
+          - os
+          - pa
+          - pl
+          - pt
+          - pt-br
+          - ro
+          - ru
+          - sk
+          - sl
+          - sq
+          - sr
+          - sr-latn
+          - sv
+          - sw
+          - ta
+          - te
+          - tg
+          - th
+          - tk
+          - tr
+          - tt
+          - udm
+          - uk
+          - ur
+          - uz
+          - vi
+          - zh-hans
+          - zh-hant
+      tags:
+      - schema
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+components:
+  schemas:
+    AdminLogin:
+      type: object
+      properties:
+        email:
+          type: string
+          maxLength: 128
+        password:
+          type: string
+          writeOnly: true
+          maxLength: 128
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          readOnly: true
+        role:
+          type: string
+          readOnly: true
+      required:
+      - access
+      - email
+      - password
+      - refresh
+      - role
+    AssignedSmartBoxReadings:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        assigned_date:
+          type: string
+          format: date-time
+          readOnly: true
+        user:
+          type: integer
+        cylinder:
+          type: string
+          nullable: true
+        smart_box:
+          type: string
+          nullable: true
+      required:
+      - assigned_date
+      - id
+    Auxiliary:
+      type: object
+      properties:
+        customer:
+          type: integer
+        first_name:
+          type: string
+          maxLength: 30
+        last_name:
+          type: string
+          maxLength: 30
+        phone_number:
+          type: string
+          pattern: ^[0]\d{10}$
+          maxLength: 11
+        date_created:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - customer
+      - date_created
+      - first_name
+      - last_name
+    BlankEnum:
+      enum:
+      - ''
+    BusinessLgaEnum:
+      enum:
+      - Agege
+      - Ajeromi-Ifelodun
+      - Alimosho
+      - Apapa
+      - Amuwo-Odofin
+      - Badagry
+      - Epe
+      - Eti-Osa
+      - Ibeju-Lekki
+      - Ifako-Ijaiye
+      - Ikeja
+      - Ikorodu
+      - Kosofe
+      - Lagos Island
+      - Lagos Mainland
+      - Mushin
+      - Ojo
+      - Oshodi-Isolo
+      - Somolu
+      - Surulere
+      type: string
+      description: |-
+        * `Agege` - Agege
+        * `Ajeromi-Ifelodun` - Ajeromi-Ifelodun
+        * `Alimosho` - Alimosho
+        * `Apapa` - Apapa
+        * `Amuwo-Odofin` - Amuwo-Odofin
+        * `Badagry` - Badagry
+        * `Epe` - Epe
+        * `Eti-Osa` - Eti-Osa
+        * `Ibeju-Lekki` - Ibeju-Lekki
+        * `Ifako-Ijaiye` - Ifako-Ijaiye
+        * `Ikeja` - Ikeja
+        * `Ikorodu` - Ikorodu
+        * `Kosofe` - Kosofe
+        * `Lagos Island` - Lagos Island
+        * `Lagos Mainland` - Lagos Mainland
+        * `Mushin` - Mushin
+        * `Ojo` - Ojo
+        * `Oshodi-Isolo` - Oshodi-Isolo
+        * `Somolu` - Somolu
+        * `Surulere` - Surulere
+    Cylinder:
+      type: object
+      properties:
+        cylinder_serial_number:
+          type: string
+          maxLength: 20
+        cylinder_type:
+          oneOf:
+          - $ref: '#/components/schemas/CylinderType7abEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        cylinder_weight:
+          type: number
+          format: double
+        cylinder_status:
+          oneOf:
+          - $ref: '#/components/schemas/SmartscaleStatusEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        manufacturer:
+          type: string
+          maxLength: 30
+        cylinder_tar_weight:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        manufacture_date:
+          type: string
+          format: date
+        date_added:
+          type: string
+          format: date
+          readOnly: true
+        maintenance_date:
+          type: string
+          format: date
+      required:
+      - cylinder_serial_number
+      - cylinder_tar_weight
+      - cylinder_weight
+      - date_added
+      - maintenance_date
+      - manufacture_date
+    CylinderList:
+      type: object
+      properties:
+        cylinder_serial_number:
+          type: string
+          maxLength: 20
+        cylinder_type:
+          oneOf:
+          - $ref: '#/components/schemas/CylinderType7abEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        cylinder_weight:
+          type: number
+          format: double
+        cylinder_status:
+          oneOf:
+          - $ref: '#/components/schemas/SmartscaleStatusEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        manufacturer:
+          type: string
+          maxLength: 30
+        cylinder_tar_weight:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        manufacture_date:
+          type: string
+          format: date
+        date_added:
+          type: string
+          format: date
+          readOnly: true
+        maintenance_date:
+          type: string
+          format: date
+      required:
+      - cylinder_serial_number
+      - cylinder_tar_weight
+      - cylinder_weight
+      - date_added
+      - maintenance_date
+      - manufacture_date
+    CylinderType526Enum:
+      enum:
+      - new_cylinder
+      - existing_cylinder
+      type: string
+      description: |-
+        * `new_cylinder` - new_cylinder
+        * `existing_cylinder` - existing_cylinder
+    CylinderType7abEnum:
+      enum:
+      - 12kg
+      - 25kg
+      - 50kg
+      type: string
+      description: |-
+        * `12kg` - 12kg
+        * `25kg` - 25kg
+        * `50kg` - 50kg
+    LgaEnum:
+      enum:
+      - Agege
+      - Ajeromi-Ifelodun
+      - Alimosho
+      - Apapa
+      - Amuwo-Odofin
+      - Badagry
+      - Epe
+      - Eti-Osa
+      - Ibeju-Lekki
+      - Ifako-Ijaiye
+      - Ikeja
+      - Ikorodu
+      - Kosofe
+      - Lagos Island
+      - Lagos Mainland
+      - Mushin
+      - Ojo
+      - Oshodi-Isolo
+      - Somolu
+      - Surulere
+      type: string
+      description: |-
+        * `Agege` - Agege
+        * `Ajeromi-Ifelodun` - Ajeromi-Ifelodun
+        * `Alimosho` - Alimosho
+        * `Apapa` - Apapa
+        * `Amuwo-Odofin` - Amuwo-Odofin
+        * `Badagry` - Badagry
+        * `Epe` - Epe
+        * `Eti-Osa` - Eti-Osa
+        * `Ibeju-Lekki` - Ibeju-Lekki
+        * `Ifako-Ijaiye` - Ifako-Ijaiye
+        * `Ikeja` - Ikeja
+        * `Ikorodu` - Ikorodu
+        * `Kosofe` - Kosofe
+        * `Lagos Island` - Lagos Island
+        * `Lagos Mainland` - Lagos Mainland
+        * `Mushin` - Mushin
+        * `Ojo` - Ojo
+        * `Oshodi-Isolo` - Oshodi-Isolo
+        * `Somolu` - Somolu
+        * `Surulere` - Surulere
+    NullEnum:
+      enum:
+      - null
+    OnboardOrder:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        annual_sub:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,2})?$
+        cylinder_cost:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,2})?$
+          nullable: true
+        gas_cost:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,2})?$
+          nullable: true
+        biller:
+          type: string
+          nullable: true
+          maxLength: 50
+        total_cost:
+          type: string
+          readOnly: true
+          nullable: true
+        date_created:
+          type: string
+          format: date-time
+          readOnly: true
+        customer:
+          type: integer
+        order:
+          type: integer
+      required:
+      - customer
+      - date_created
+      - id
+      - order
+      - total_cost
+    OnboardedOrderList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        cylinder_type:
+          oneOf:
+          - $ref: '#/components/schemas/CylinderType526Enum'
+          - $ref: '#/components/schemas/BlankEnum'
+        state:
+          type: string
+          maxLength: 60
+        lga:
+          $ref: '#/components/schemas/LgaEnum'
+        home_address:
+          type: string
+        order_transaction_id:
+          type: string
+          maxLength: 200
+        date_created:
+          type: string
+          format: date-time
+          readOnly: true
+        customer:
+          type: integer
+      required:
+      - customer
+      - date_created
+      - home_address
+      - id
+      - lga
+    OnboardingOrder:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        cylinder_type:
+          $ref: '#/components/schemas/CylinderType526Enum'
+        state:
+          type: string
+          maxLength: 60
+        lga:
+          $ref: '#/components/schemas/LgaEnum'
+        home_address:
+          type: string
+        customer:
+          type: integer
+      required:
+      - customer
+      - cylinder_type
+      - home_address
+      - id
+      - lga
+    OpsDelivery:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        uid:
+          type: string
+          format: uuid
+          readOnly: true
+          title: Public identifier
+        email:
+          type: string
+          nullable: true
+          maxLength: 50
+        phone_number:
+          type: string
+          pattern: ^[0]\d{10}$
+          maxLength: 11
+        first_name:
+          type: string
+          nullable: true
+          maxLength: 50
+        last_name:
+          type: string
+          nullable: true
+          maxLength: 50
+        image:
+          type: string
+          nullable: true
+          maxLength: 300
+        role:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/RoleEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        user_class:
+          type: string
+          nullable: true
+          maxLength: 30
+        when_to_onboard:
+          type: string
+          format: date
+          nullable: true
+        address:
+          type: string
+          nullable: true
+        lga:
+          type: string
+          nullable: true
+          maxLength: 100
+        state:
+          type: string
+          nullable: true
+          maxLength: 100
+        is_staff:
+          type: boolean
+        date_for_your_onboarding:
+          type: string
+          format: date
+          readOnly: true
+        date_joined:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - date_for_your_onboarding
+      - date_joined
+      - id
+      - uid
+    PaginatedOnboardedOrderListList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/OnboardedOrderList'
+    PaginatedRetailersListList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/RetailersList'
+    PatchedAuxiliary:
+      type: object
+      properties:
+        customer:
+          type: integer
+        first_name:
+          type: string
+          maxLength: 30
+        last_name:
+          type: string
+          maxLength: 30
+        phone_number:
+          type: string
+          pattern: ^[0]\d{10}$
+          maxLength: 11
+        date_created:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedCylinder:
+      type: object
+      properties:
+        cylinder_serial_number:
+          type: string
+          maxLength: 20
+        cylinder_type:
+          oneOf:
+          - $ref: '#/components/schemas/CylinderType7abEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        cylinder_weight:
+          type: number
+          format: double
+        cylinder_status:
+          oneOf:
+          - $ref: '#/components/schemas/SmartscaleStatusEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        manufacturer:
+          type: string
+          maxLength: 30
+        cylinder_tar_weight:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        manufacture_date:
+          type: string
+          format: date
+        date_added:
+          type: string
+          format: date
+          readOnly: true
+        maintenance_date:
+          type: string
+          format: date
+    PatchedRetailers:
+      type: object
+      properties:
+        first_name:
+          type: string
+          maxLength: 60
+        last_name:
+          type: string
+          maxLength: 60
+        business_name:
+          type: string
+          maxLength: 100
+        email:
+          type: string
+          nullable: true
+          maxLength: 60
+        business_address:
+          type: string
+          nullable: true
+        business_lga:
+          $ref: '#/components/schemas/BusinessLgaEnum'
+        business_state:
+          type: string
+          nullable: true
+          maxLength: 100
+        business_phone_number:
+          type: string
+          nullable: true
+          maxLength: 11
+        first_reference:
+          type: string
+          maxLength: 30
+        second_reference:
+          type: string
+          maxLength: 30
+    PatchedSmartBox:
+      type: object
+      properties:
+        box_id:
+          type: string
+          maxLength: 10
+        manufacturer:
+          type: string
+          maxLength: 100
+        smartbox_status:
+          oneOf:
+          - $ref: '#/components/schemas/SmartscaleStatusEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        date_created:
+          type: string
+          format: date
+          readOnly: true
+    PatchedSmartScale:
+      type: object
+      properties:
+        scale_id:
+          type: string
+          maxLength: 10
+        manufacturer:
+          type: string
+          maxLength: 100
+        smartscale_status:
+          oneOf:
+          - $ref: '#/components/schemas/SmartscaleStatusEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        date_added:
+          type: string
+          format: date
+          readOnly: true
+    PatchedUserUpdate:
+      type: object
+      properties:
+        first_name:
+          type: string
+          nullable: true
+          maxLength: 50
+        last_name:
+          type: string
+          nullable: true
+          maxLength: 50
+        phone_number:
+          type: string
+          pattern: ^[0]\d{10}$
+          maxLength: 11
+        email:
+          type: string
+          nullable: true
+          maxLength: 50
+        address:
+          type: string
+          nullable: true
+        lga:
+          type: string
+          nullable: true
+          maxLength: 100
+        state:
+          type: string
+          nullable: true
+          maxLength: 100
+    ResidentUserRegistration:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        phone_number:
+          type: string
+          pattern: ^[0]\d{10}$
+          maxLength: 11
+        email:
+          type: string
+          nullable: true
+          maxLength: 50
+        first_name:
+          type: string
+          nullable: true
+          maxLength: 50
+        last_name:
+          type: string
+          nullable: true
+          maxLength: 50
+        date_for_your_onboarding:
+          type: string
+          format: date
+        password:
+          type: string
+          writeOnly: true
+          maxLength: 128
+          minLength: 8
+        token:
+          type: string
+          readOnly: true
+          maxLength: 255
+      required:
+      - date_for_your_onboarding
+      - id
+      - password
+      - token
+    RetailAssignCylinder:
+      type: object
+      properties:
+        user:
+          type: integer
+        cylinder:
+          type: string
+        smart_box:
+          type: string
+        assigned_date:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - assigned_date
+      - cylinder
+      - smart_box
+    Retailers:
+      type: object
+      properties:
+        first_name:
+          type: string
+          maxLength: 60
+        last_name:
+          type: string
+          maxLength: 60
+        business_name:
+          type: string
+          maxLength: 100
+        email:
+          type: string
+          nullable: true
+          maxLength: 60
+        business_address:
+          type: string
+          nullable: true
+        business_lga:
+          $ref: '#/components/schemas/BusinessLgaEnum'
+        business_state:
+          type: string
+          nullable: true
+          maxLength: 100
+        business_phone_number:
+          type: string
+          nullable: true
+          maxLength: 11
+        first_reference:
+          type: string
+          maxLength: 30
+        second_reference:
+          type: string
+          maxLength: 30
+      required:
+      - business_lga
+      - business_name
+      - first_reference
+      - second_reference
+    RetailersList:
+      type: object
+      properties:
+        first_name:
+          type: string
+          maxLength: 60
+        last_name:
+          type: string
+          maxLength: 60
+        business_name:
+          type: string
+          maxLength: 100
+        email:
+          type: string
+          nullable: true
+          maxLength: 60
+        business_address:
+          type: string
+          nullable: true
+        business_lga:
+          $ref: '#/components/schemas/BusinessLgaEnum'
+        business_state:
+          type: string
+          nullable: true
+          maxLength: 100
+        business_phone_number:
+          type: string
+          nullable: true
+          maxLength: 11
+        first_reference:
+          type: string
+          maxLength: 30
+        second_reference:
+          type: string
+          maxLength: 30
+        is_online:
+          type: boolean
+        date_added:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - business_lga
+      - business_name
+      - date_added
+      - first_reference
+      - second_reference
+    RoleEnum:
+      enum:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      type: integer
+      description: |-
+        * `1` - Sme
+        * `2` - Admin
+        * `3` - Delivery
+        * `4` - Ops
+        * `5` - Client
+    SME2List:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        uid:
+          type: string
+          format: uuid
+          readOnly: true
+          title: Public identifier
+        email:
+          type: string
+          nullable: true
+          maxLength: 50
+        phone_number:
+          type: string
+          pattern: ^[0]\d{10}$
+          maxLength: 11
+        first_name:
+          type: string
+          nullable: true
+          maxLength: 50
+        last_name:
+          type: string
+          nullable: true
+          maxLength: 50
+        image:
+          type: string
+          nullable: true
+          maxLength: 300
+        role:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/RoleEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        user_class:
+          type: string
+          nullable: true
+          maxLength: 30
+        when_to_onboard:
+          type: string
+          format: date
+          nullable: true
+        address:
+          type: string
+          nullable: true
+        lga:
+          type: string
+          nullable: true
+          maxLength: 100
+        state:
+          type: string
+          nullable: true
+          maxLength: 100
+        is_staff:
+          type: boolean
+        date_for_your_onboarding:
+          type: string
+          format: date
+          readOnly: true
+        date_joined:
+          type: string
+          format: date-time
+          readOnly: true
+        business_name:
+          type: string
+          maxLength: 100
+        business_type:
+          type: string
+          nullable: true
+          maxLength: 30
+        business_address:
+          type: string
+          maxLength: 100
+        business_lga:
+          type: string
+          maxLength: 20
+        business_state:
+          type: string
+          maxLength: 20
+        has_new_shop:
+          type: string
+          nullable: true
+          maxLength: 30
+        asset_type:
+          type: string
+          nullable: true
+          maxLength: 30
+        has_cylinder:
+          type: string
+          nullable: true
+          maxLength: 30
+        cylinder_size:
+          type: string
+          nullable: true
+          maxLength: 30
+        cylinder_position:
+          type: string
+          nullable: true
+          maxLength: 30
+        date_created:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - date_created
+      - date_for_your_onboarding
+      - date_joined
+      - id
+      - uid
+    SMEAssignCylinder:
+      type: object
+      properties:
+        user:
+          type: integer
+        cylinder:
+          type: string
+        smart_scale:
+          type: string
+        smart_box:
+          type: string
+      required:
+      - cylinder
+      - smart_box
+      - smart_scale
+    SMEUserRegistration:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        phone_number:
+          type: string
+          pattern: ^[0]\d{10}$
+          maxLength: 11
+        email:
+          type: string
+          nullable: true
+          maxLength: 50
+        business_name:
+          type: string
+          maxLength: 100
+        business_address:
+          type: string
+          maxLength: 100
+        lga:
+          type: string
+          nullable: true
+          maxLength: 100
+        business_state:
+          type: string
+          maxLength: 20
+        business_type:
+          type: string
+          nullable: true
+          maxLength: 30
+        has_new_shop:
+          type: string
+          nullable: true
+          maxLength: 30
+        asset_type:
+          type: string
+          nullable: true
+          maxLength: 30
+        has_cylinder:
+          type: string
+          nullable: true
+          maxLength: 30
+        cylinder_size:
+          type: string
+          nullable: true
+          maxLength: 30
+        cylinder_position:
+          type: string
+          nullable: true
+          maxLength: 30
+        password:
+          type: string
+          writeOnly: true
+          maxLength: 128
+          minLength: 8
+        token:
+          type: string
+          readOnly: true
+          maxLength: 255
+      required:
+      - id
+      - password
+      - token
+    SmartBox:
+      type: object
+      properties:
+        box_id:
+          type: string
+          maxLength: 10
+        manufacturer:
+          type: string
+          maxLength: 100
+        smartbox_status:
+          oneOf:
+          - $ref: '#/components/schemas/SmartscaleStatusEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        date_created:
+          type: string
+          format: date
+          readOnly: true
+      required:
+      - box_id
+      - date_created
+    SmartBoxReadings:
+      type: object
+      properties:
+        smart_box:
+          type: string
+          maxLength: 20
+        quantity_supplied:
+          type: number
+          format: double
+          nullable: true
+        quantity_used:
+          type: number
+          format: double
+          nullable: true
+        quantity_remaining:
+          type: number
+          format: double
+          nullable: true
+        battery_remaining:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+      required:
+      - battery_remaining
+      - smart_box
+    SmartScale:
+      type: object
+      properties:
+        scale_id:
+          type: string
+          maxLength: 10
+        manufacturer:
+          type: string
+          maxLength: 100
+        smartscale_status:
+          oneOf:
+          - $ref: '#/components/schemas/SmartscaleStatusEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        date_added:
+          type: string
+          format: date
+          readOnly: true
+      required:
+      - date_added
+      - scale_id
+    SmartscaleStatusEnum:
+      enum:
+      - assigned
+      - unassigned
+      type: string
+      description: |-
+        * `assigned` - assigned
+        * `unassigned` - unassigned
+    StaffUserRegistration:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        phone_number:
+          type: string
+          pattern: ^[0]\d{10}$
+          maxLength: 11
+        email:
+          type: string
+          nullable: true
+          maxLength: 50
+        first_name:
+          type: string
+          nullable: true
+          maxLength: 50
+        last_name:
+          type: string
+          nullable: true
+          maxLength: 50
+        lga:
+          type: string
+          nullable: true
+          maxLength: 100
+        address:
+          type: string
+          nullable: true
+        state:
+          type: string
+          nullable: true
+          maxLength: 100
+        password:
+          type: string
+          maxLength: 128
+      required:
+      - id
+      - password
+    TokenObtainPair:
+      type: object
+      properties:
+        phone_number:
+          type: string
+          writeOnly: true
+        password:
+          type: string
+          writeOnly: true
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          readOnly: true
+      required:
+      - access
+      - password
+      - phone_number
+      - refresh
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          writeOnly: true
+      required:
+      - access
+      - refresh
+    UserList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        uid:
+          type: string
+          format: uuid
+          readOnly: true
+          title: Public identifier
+        email:
+          type: string
+          nullable: true
+          maxLength: 50
+        phone_number:
+          type: string
+          pattern: ^[0]\d{10}$
+          maxLength: 11
+        first_name:
+          type: string
+          nullable: true
+          maxLength: 50
+        last_name:
+          type: string
+          nullable: true
+          maxLength: 50
+        image:
+          type: string
+          nullable: true
+          maxLength: 300
+        role:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/RoleEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        user_class:
+          type: string
+          nullable: true
+          maxLength: 30
+        when_to_onboard:
+          type: string
+          format: date
+          nullable: true
+        address:
+          type: string
+          nullable: true
+        lga:
+          type: string
+          nullable: true
+          maxLength: 100
+        state:
+          type: string
+          nullable: true
+          maxLength: 100
+        is_staff:
+          type: boolean
+        date_for_your_onboarding:
+          type: string
+          format: date
+          readOnly: true
+        date_joined:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - date_for_your_onboarding
+      - date_joined
+      - id
+      - uid
+    UserLogin:
+      type: object
+      properties:
+        phone_number:
+          type: string
+          maxLength: 128
+        password:
+          type: string
+          writeOnly: true
+          maxLength: 128
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          readOnly: true
+        role:
+          type: string
+          readOnly: true
+      required:
+      - access
+      - password
+      - phone_number
+      - refresh
+      - role
+    UserUpdate:
+      type: object
+      properties:
+        first_name:
+          type: string
+          nullable: true
+          maxLength: 50
+        last_name:
+          type: string
+          nullable: true
+          maxLength: 50
+        phone_number:
+          type: string
+          pattern: ^[0]\d{10}$
+          maxLength: 11
+        email:
+          type: string
+          nullable: true
+          maxLength: 50
+        address:
+          type: string
+          nullable: true
+        lga:
+          type: string
+          nullable: true
+          maxLength: 100
+        state:
+          type: string
+          nullable: true
+          maxLength: 100
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
