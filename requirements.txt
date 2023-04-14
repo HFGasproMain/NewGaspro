@@ -19,7 +19,6 @@ social-auth-app-django==4.0.0
 social-auth-core==4.1.0
 urllib3==1.26.4
 whitenoise==6.2.0
-asgiref==3.6.0
 Django==4.1.7
 django-cors-headers==3.13.0
 djangorestframework==3.14.0
