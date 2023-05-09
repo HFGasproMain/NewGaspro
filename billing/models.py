@@ -7,8 +7,8 @@ class OrderOnboardBilling(models.Model):
 	customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='customer_onboard_order')
 	order = models.OneToOneField(OnboardingOrder, on_delete=models.CASCADE, related_name='onboarded_order')
 	annual_sub = models.DecimalField(max_digits=8, decimal_places=2, default=10000.00)
-	cylinder_cost = models.DecimalField(max_digits=8, decimal_places=2, default=18000.00, blank=True, null=True)
-	gas_cost = models.DecimalField(max_digits=8, decimal_places=2, default=9600.00, blank=True, null=True)
+	cylinder_fee = models.DecimalField(max_digits=8, decimal_places=2, default=18000.00, blank=True, null=True)
+	gas_fee = models.DecimalField(max_digits=8, decimal_places=2, default=9600.00, blank=True, null=True)
 	biller = models.CharField(max_length=50, null=True, blank=True, default='Homefort Delivery Staff')
 	total_cost = models.CharField(max_length=20, blank=True, null=True, default='00.00', editable=False)
 	date_created = models.DateTimeField(auto_now_add=True)
@@ -22,6 +22,9 @@ class OrderOnboardBilling(models.Model):
 
 	def get_cost(self):
 		return Decimal(self.annual_sub) + Decimal(self.cylinder_cost) + Decimal(self.gas_cost)
+
+	class Meta:
+		ordering = ['-date_created']
 
 
 

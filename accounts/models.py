@@ -53,7 +53,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         return '{},{},{}'.format(str(self.first_name), str(self.last_name), str(self.user_class))
 
 
-
 class SMEUser2(User):
     #which_user = models.CharField(max_length=100, blank=True, default='sme_new_user', null=True)
     business_name = models.CharField(max_length=100, default="Homefort SME", blank=True)

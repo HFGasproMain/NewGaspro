@@ -39,6 +39,33 @@ class SmartBoxReadings(models.Model):
 #12kg; cylinder = 12kg, cylinder_tare_weight = initial_cylinder_weight
 
 
+class NewReading(models.Model):
+    user = models.CharField(max_length=20, null=True, blank=True)
+    smart_scale = models.CharField(max_length=20)
+    weight = models.FloatField(max_length=10)
+    quantity_supplied = models.FloatField(max_length=10, null=True, blank=True, default="0")
+    quantity_used = models.FloatField(max_length=10, null=True, blank=True)
+    quantity_remaining = models.FloatField(max_length=10, null=True, blank=True)
+    battery_remaining = models.DecimalField(decimal_places=2, max_digits=6)
+    cylinder = models.CharField(max_length=20, null=True, blank=True)
+    cylinder_tare_weight = models.CharField(max_length=20, null=True, blank=True)
+    master = models.CharField(max_length=20, null=True, blank=True, default="0")
+    master_battery_level = models.CharField(max_length=20, null=True, blank=True, default="0")
+    min_value = models.CharField(max_length=20, null=True, blank=True, default="0")
+    max_value = models.CharField(max_length=20, null=True, blank=True, default="0")
+    longitude = models.CharField(max_length=20, null=True, blank=True, default="0")
+    latitude = models.CharField(max_length=20, null=True, blank=True, default="0")
+    asset_type = models.CharField(max_length=20, default="smart scale")
+    last_push = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-last_push']
+
+    def __str__(self):
+        return self.smart_scale
+
+
+
 class SmartScaleMonitor(models.Model):
     smart_scale = models.CharField(max_length=20)
     value = models.IntegerField()

@@ -17,6 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from django.views.generic import TemplateView
+
 # from rest_framework_swagger.views import get_swagger_view
 # from rest_framework.schemas import get_schema_view
 # from rest_framework.documentation import include_docs_urls
@@ -35,6 +37,15 @@ urlpatterns = [
     path('api/v2/api-auth/', include('rest_framework.urls')),
     path('api/v2/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/v2/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+
+    # fcm template
+    path("firebase-messaging-sw.js",
+        TemplateView.as_view(template_name="firebase-messaging-sw.js",content_type="application/javascript",
+        ),
+        name="firebase-messaging-sw.js"
+    ),
+
+
 
     #path('swagger-docs/', schema_view),
     #path('docs/', include_docs_urls(title='HFV2 APIs')),
