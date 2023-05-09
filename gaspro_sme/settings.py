@@ -51,7 +51,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'drf_spectacular',
-    #'fcm_django',
+
     #'rest_framework_swagger',
     #'rest_framework_simplejwt'
 
