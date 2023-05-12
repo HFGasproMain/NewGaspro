@@ -96,8 +96,8 @@ class ResidentUserRegistrationView(APIView):
         if request.data.get('first_name') is None or request.data.get('last_name') is None:
             return Response({"message": "First name or last name must be provided!"}, status=status.HTTP_400_BAD_REQUEST)
         
-        # if request.data.get('lga') is None or request.data.get('address') is None or request.data.get('state') is None:
-        #        return Response({"message": "All address details must be provided!"}, status=status.HTTP_400_BAD_REQUEST)
+        if request.data.get('lga') is None or request.data.get('address') is None or request.data.get('state') is None:
+                return Response({"message": "All address details must be provided!"}, status=status.HTTP_400_BAD_REQUEST)
         
         if request.data.get('phone_number') is None:
             return Response({"message": "Phone number cannot be empty!"}, status=status.HTTP_400_BAD_REQUEST) 

@@ -15,7 +15,7 @@ class RetailersCreateView(generics.CreateAPIView):
 	""" Create a Retailer """
 	queryset = Retailers.objects.all()
 	serializer_class = RetailersSerializer
-	permission_classes = (IsAdminOrReadOnly, permissions.IsAuthenticated)
+	#lpermission_classes = (IsAdminOrReadOnly, permissions.IsAuthenticated)
 
 
 class RetailersListView(generics.ListAPIView):

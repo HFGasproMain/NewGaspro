@@ -64,7 +64,7 @@ class ResidentUserRegistrationSerializer(serializers.ModelSerializer):
             'first_name',
             'last_name',
             'date_for_your_onboarding',
-            #'lga',
+            'lga',
             #'address',
             #'state',
             'password',
