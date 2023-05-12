@@ -38,12 +38,6 @@ urlpatterns = [
     path('api/v2/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/v2/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
 
-    # fcm template
-    # path("firebase-messaging-sw.js",
-    #     TemplateView.as_view(template_name="firebase-messaging-sw.js",content_type="application/javascript",
-    #     ),name="firebase-messaging-sw.js"
-    # ),
-
     #path('swagger-docs/', schema_view),
     #path('docs/', include_docs_urls(title='HFV2 APIs')),
     #path('schema/', schema_view),
