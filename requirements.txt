@@ -8,11 +8,7 @@ django-rest-auth==0.9.5
 djangorestframework==3.14.0
 djangorestframework-simplejwt==5.2.2
 drf-spectacular==0.26.1
-<<<<<<< HEAD
-=======
 drf-spectacular==0.26.1
->>>>>>> 3b8a9c52d06841f7dd70e011f29264e80a35edff
-fcm-django==1.0.12
 Pillow==8.1.0
 psycopg2==2.9.5
 psycopg2-binary==2.8.6
