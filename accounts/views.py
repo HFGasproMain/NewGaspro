@@ -3,7 +3,7 @@ import uuid
 
 from rest_framework import status, generics
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -12,7 +12,7 @@ from rest_framework.views import APIView
 
 from .serializers import SMEUserRegistrationSerializer, StaffUserRegistrationSerializer, AdminLoginSerializer, \
 	UserLoginSerializer, UserListSerializer, UserSerializer, OpsDeliverySerializer, ResidentUserRegistrationSerializer, \
-    SME2ListSerializer, UserUpdateSerializer
+    SME2ListSerializer, UserUpdateSerializer, ResidentialUserSerializer
     #InvestorSerializer, InvestorClientRequestSerializer, InvestorClientSerializer, InvestorInterestSerializer, \
 
 from .models import User, SMEUser2
@@ -93,14 +93,17 @@ class ResidentUserRegistrationView(APIView):
 
     def post(self, request):
         #global assignment
+        referral_code = request.POST.get('any_referral_code')
+        print(f'initial reffered_by => {referral_code}')
+
         if request.data.get('first_name') is None or request.data.get('last_name') is None:
             return Response({"message": "First name or last name must be provided!"}, status=status.HTTP_400_BAD_REQUEST)
         
-        if request.data.get('lga') is None or request.data.get('address') is None or request.data.get('state') is None:
-                return Response({"message": "All address details must be provided!"}, status=status.HTTP_400_BAD_REQUEST)
-        
         if request.data.get('phone_number') is None:
             return Response({"message": "Phone number cannot be empty!"}, status=status.HTTP_400_BAD_REQUEST) 
+
+        if request.data.get('email') is None:
+            return Response({"message": "Email address cannot be empty!"}, status=status.HTTP_400_BAD_REQUEST) 
 
         if request.data.get('date_for_your_onboarding') is None:
             return Response({"message": "Please choose an onboarding date!"}, status=status.HTTP_400_BAD_REQUEST) 
@@ -108,24 +111,32 @@ class ResidentUserRegistrationView(APIView):
         if User.objects.filter(phone_number=request.data.get('phone_number')).exists():
             return Response({"message": "User with this phone number already exists!"}, status=status.HTTP_400_BAD_REQUEST)
 
+        the_referral = User.objects.filter(referral_code=request.data.get('any_referral_code')).first()
+        print(f'the referral => {the_referral}')
+        if the_referral is None:
+            return Response({"message": "User with this referral code doesn't exists!"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # meta data
+        role = 5
+        referred_by = the_referral
         serializer = self.serializer_class(data=request.data)
         valid = serializer.is_valid(raise_exception=True)
-        role = 5 
 
         if valid:
-            serializer.save(role=role)
+            serializer.save(role=role, referred_by=the_referral)
             print(serializer.data)
-
             response = {
                 'success': True,
                 'statusCode': status.HTTP_201_CREATED,
                 'message': 'User successfully registered!',
-                'user_info': serializer.data
+                'user_info': serializer.data,
+                #'referral_code': user.referral_code
             }
             return Response(response, status=status.HTTP_201_CREATED)
         else:
             return Response({"message": "No user enabled to create questionnaire and wallet"},
                             status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class AdminUserRegistrationView(APIView):
@@ -301,6 +312,7 @@ class AdminLoginView(APIView):
                 return Response({"message": "Invalid email or password entered"},
                                 status=status.HTTP_400_BAD_REQUEST)
 
+
 # Get Users View
 class UserListView(APIView):
     serializer_class = UserListSerializer
@@ -333,13 +345,13 @@ class SMEUserListView(APIView):
         serializer = self.serializer_class(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-class RetailUserListView(APIView):
-    """ SME Customers List View """
-    serializer_class = UserListSerializer
+class ResidentialUsersListView(APIView):
+    """ All Residential Customers API """
+    serializer_class = ResidentialUserSerializer
     permission_classes = (AllowAny,)
 
     def get(self, request):
-        users = User.objects.filter(role=1)
+        users = User.objects.filter(role=5)
         serializer = self.serializer_class(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 

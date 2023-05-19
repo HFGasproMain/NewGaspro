@@ -3,13 +3,13 @@ from rest_framework_simplejwt import views as jwt_views
 from .views import (
     SMEUserRegistrationView, AdminUserRegistrationView, DeliveryUserRegistrationView, OperationsUserRegistrationView, 
     UserLoginView, UserListView, get_user_profile, AdminLoginView, get_ops_and_delivery, SMEUserListView, ResidentUserRegistrationView,
-    AdminUserListView, DeliveryUserListView, UpdateUserProfileView, delete_user, OpsDeliveryListView, RetailUserListView
+    AdminUserListView, DeliveryUserListView, UpdateUserProfileView, delete_user, OpsDeliveryListView, ResidentialUsersListView
 )
 
 urlpatterns =[
 	# Registration
 	path('sme/register/', SMEUserRegistrationView.as_view(), name='sme-register'),
-    path('retail/register/', ResidentUserRegistrationView.as_view(), name='retail-register'),
+    path('residential/register/', ResidentUserRegistrationView.as_view(), name='retail-register'),
     path('admin-register/', AdminUserRegistrationView.as_view(), name='admin-register'),
     path('delivery-register/', DeliveryUserRegistrationView.as_view(), name='delivery-register'),
     path('operations-register/', OperationsUserRegistrationView.as_view(), name='ops-register'),
@@ -21,7 +21,7 @@ urlpatterns =[
     # Users
     path('users/', UserListView.as_view(), name='users'),
     path('sme/clients/', SMEUserListView.as_view(), name='sme-users'),
-    path('retail/clients/', RetailUserListView.as_view(), name='retail-users'),
+    path('residential/users/', ResidentialUsersListView.as_view(), name='residential-users'),
     path('admin-users/', AdminUserListView.as_view(), name='users'),
     path('delivery-users/', DeliveryUserListView.as_view(), name='users'),
     #path('ops-delivery/', get_ops_and_delivery, name='ops-delivery'),

@@ -17,6 +17,14 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         model = User
         fields = ['first_name', 'last_name', 'phone_number', 'email', 'address', 'lga', 'state']
 
+
+class ResidentialUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'phone_number', 'email',  "referral_code", \
+        'date_for_your_onboarding', 'date_joined', 'referred_by']
+
+
 class SMEUserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=128, min_length=8, write_only=True)
     token = serializers.CharField(max_length=255, read_only=True)
@@ -59,15 +67,16 @@ class ResidentUserRegistrationSerializer(serializers.ModelSerializer):
         model = User
         fields = (
             'id',
-            'phone_number',
-            'email',
             'first_name',
             'last_name',
+            'phone_number',
+            'email',
             'date_for_your_onboarding',
-            'lga',
+            #'lga',
             #'address',
             #'state',
             'password',
+            'any_referral_code',
             "token",
         )
 

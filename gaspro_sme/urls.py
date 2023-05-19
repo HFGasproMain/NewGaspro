@@ -18,12 +18,14 @@ from django.contrib import admin
 from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from django.views.generic import TemplateView
+from django.conf import settings
+from django.conf.urls.static import static
 
 # from rest_framework_swagger.views import get_swagger_view
 # from rest_framework.schemas import get_schema_view
 # from rest_framework.documentation import include_docs_urls
 
-urlpatterns = [s
+urlpatterns = [
     path("admin/", admin.site.urls),
     path('api/v2/accounts/', include('accounts.urls')),
     path('api/v2/assets/', include('asset.urls')),
@@ -42,3 +44,6 @@ urlpatterns = [s
     #path('docs/', include_docs_urls(title='HFV2 APIs')),
     #path('schema/', schema_view),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
