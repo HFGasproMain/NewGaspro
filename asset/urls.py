@@ -3,7 +3,8 @@ from .views import CylinderCreateView, CylinderListView, CylinderDeleteView, Cyl
 	SmartScaleCreateView, SmartScaleListView, SmartScaleDeleteView, SmartScaleUpdateView, SmartBoxCreateView, \
 	 SmartBoxDeleteView, SmartBoxUpdateView, SmartBoxListView, SMEAssignCylinderCreateView, RetailAssignedCylinderListView, \
      SMEUserAssignedCylinderHistory, AssignedCylinderHistory, ResidentialAssignCylinderCreateView, CylinderDetailView, \
-     cylinder_detail_view
+     cylinder_detail_view, OtherBillableAssetsCreateView, GasPriceCreateView, OtherBillableAssetsListView, GasPriceListView, \
+     OtherBillableAssetsUpdateView, GasPriceUpdateView
 
 urlpatterns = [
 	# assets create
@@ -23,6 +24,14 @@ urlpatterns = [
     path("assigned-cylinders/sme/", SMEAssignedCylinderListView.as_view(), name='sme-assigned-cylinders'),
     path("history/assigned-cylinders/<str:sme_id>/", SMEUserAssignedCylinderHistory.as_view(), name='assignedcy-history-by-sme'),
     path("history/assigned-cylinder/<str:cy_tag_id>/", AssignedCylinderHistory.as_view(), name='assignedcy-history-by-cy'),
+
+    # other asset prices
+    path("gas-price-create/", GasPriceCreateView.as_view(), name='create-gas-price'),
+    path("gas-price/", GasPriceListView.as_view(), name='gas-price'),
+    path("update-gas-price/<str:pk>/", GasPriceUpdateView.as_view(), name='update-gas-price'),
+    path("other-assets-create/", OtherBillableAssetsCreateView.as_view(), name='create-other-assets-price'),
+    path("other-assets/", OtherBillableAssetsListView.as_view(), name='other-assets-price'),
+    path("update-other-assets/<str:pk>/", OtherBillableAssetsUpdateView.as_view(), name='update-other-assets-price'),
 
     # single asset
     path("delete-smartscale/<str:pk>", SmartScaleDeleteView.as_view(), name='delete-smartscale'),

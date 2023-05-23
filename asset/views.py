@@ -7,11 +7,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from accounts.models import User
-from .models import Cylinder, SmartScale, SmartBox, SMEAssignCylinder, RetailAssignCylinder
+from .models import Cylinder, SmartScale, SmartBox, SMEAssignCylinder, RetailAssignCylinder, OtherBillableAssets, GasPrice
 from meter_readings.models import SmartBoxMonitor, SmartScaleMonitor, SmartBoxReadings
 
 from .serializers import CylinderSerializer, CylinderListSerializer, SMEAssignCylinderSerializer, \
-	SmartScaleSerializer, SmartBoxSerializer, ResidentialAssignCylinderSerializer
+	SmartScaleSerializer, SmartBoxSerializer, ResidentialAssignCylinderSerializer, OtherBillableAssetsSerializer, \
+	GasPriceSerializer
+
 
 """
 All Assets Related Views
@@ -288,3 +290,43 @@ class SmartBoxUpdateView(generics.UpdateAPIView):
 	permission_classes = (AllowAny,)
 
    
+
+class OtherBillableAssetsCreateView(generics.CreateAPIView):
+	""" API to Set Other Assets Price """
+	queryset = OtherBillableAssets.objects.all()
+	serializer_class = OtherBillableAssetsSerializer
+	#permission_classes = (AllowAny)
+
+class OtherBillableAssetsListView(generics.ListAPIView):
+	""" API to List Other Billable Assets """
+	queryset = OtherBillableAssets.objects.all()
+	serializer_class = OtherBillableAssetsSerializer
+	permission_classes = (AllowAny,)
+
+
+class OtherBillableAssetsUpdateView(generics.UpdateAPIView):
+	""" API to Update Current Gas Price """
+	queryset = OtherBillableAssets.objects.all()
+	serializer_class = OtherBillableAssetsSerializer
+	permission_classes = (AllowAny,)
+
+
+class GasPriceCreateView(generics.CreateAPIView):
+	""" API to Set Current Gas Price """
+	queryset = GasPrice.objects.all()
+	serializer_class = GasPriceSerializer
+	#permission_classes = (AllowAny)
+
+
+class GasPriceListView(generics.ListAPIView):
+	""" API to List Current Gas Price """
+	queryset = GasPrice.objects.all()
+	serializer_class = GasPriceSerializer
+	permission_classes = (AllowAny,)
+
+
+class GasPriceUpdateView(generics.UpdateAPIView):
+	""" API to Update Current Gas Price """
+	queryset = GasPrice.objects.all()
+	serializer_class = GasPriceSerializer
+	permission_classes = (AllowAny,)

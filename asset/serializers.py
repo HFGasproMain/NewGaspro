@@ -7,7 +7,7 @@ from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from accounts.models import User
-from .models import Cylinder, SMEAssignCylinder, SmartBox, SmartScale, RetailAssignCylinder
+from .models import Cylinder, SMEAssignCylinder, SmartBox, SmartScale, RetailAssignCylinder, GasPrice, OtherBillableAssets
 
 
 
@@ -24,7 +24,7 @@ class CylinderListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cylinder
         fields = '__all__'
-        
+
 
 class UnassignedCylindersChoiceField(ModelChoiceField):
     def queryset(self, queryset):
@@ -65,6 +65,20 @@ class SmartBoxSerializer(serializers.ModelSerializer):
         model = SmartBox
         fields = ['box_id', 'manufacturer']
         #fields = '__all__'
+
+
+# othe assets
+class GasPriceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GasPrice
+        fields = '__all__'
+
+
+class OtherBillableAssetsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OtherBillableAssets
+        fields = '__all__'
+        
 
 """
 # class QuestionnaireSerializer(serializers.ModelSerializer):

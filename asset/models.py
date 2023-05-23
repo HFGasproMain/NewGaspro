@@ -105,3 +105,25 @@ class CylinderMovement(models.Model):
 
     def __str__(self):
         return self.operations_staff
+
+
+class GasPrice(models.Model):
+    current_price = models.DecimalField(max_length=10, max_digits=10, default='0.00', decimal_places=2)
+    user = models.CharField(max_length=30, default='Homefort Admin', blank=True)
+    date_added = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('-date_added',)
+
+
+class OtherBillableAssets(models.Model):
+    low_pressure_regulator_price_per_yard = models.DecimalField(max_length=10, max_digits=10, default='0.00kg', decimal_places=2)
+    high_pressure_regulator_price_per_yard = models.DecimalField(max_length=10, max_digits=10, default='0.00kg', decimal_places=2)
+    low_pressure_hose_price_per_yard = models.DecimalField(max_length=10, max_digits=10, default='0.00kg', decimal_places=2)
+    high_pressure_hose_price_per_yard = models.DecimalField(max_length=10, max_digits=10, default='0.00kg', decimal_places=2)
+    subsidized_cylinder_price = models.DecimalField(max_length=10, max_digits=10, default='0.00kg', decimal_places=2)
+    user = models.CharField(max_length=30, default='Homefort Admin', blank=True)
+    date_added = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('-date_added',)
