@@ -2,7 +2,7 @@ from django.urls import path
 from .views import CylinderCreateView, CylinderListView, CylinderDeleteView, CylinderUpdateView, SMEAssignedCylinderListView, \
 	SmartScaleCreateView, SmartScaleListView, SmartScaleDeleteView, SmartScaleUpdateView, SmartBoxCreateView, \
 	 SmartBoxDeleteView, SmartBoxUpdateView, SmartBoxListView, SMEAssignCylinderCreateView, RetailAssignedCylinderListView, \
-     SMEUserAssignedCylinderHistory, AssignedCylinderHistory, RetailAssignCylinderCreateView, CylinderDetailView, \
+     SMEUserAssignedCylinderHistory, AssignedCylinderHistory, ResidentialAssignCylinderCreateView, CylinderDetailView, \
      cylinder_detail_view
 
 urlpatterns = [
@@ -12,14 +12,14 @@ urlpatterns = [
     path("smartbox-create/", SmartBoxCreateView.as_view(), name='smartbox-create'),
 
     # assign cylinder
-    path('cylinder-onboard/sme/', SMEAssignCylinderCreateView.as_view(), name='cylinder-onboard'),
-    path('cylinder-onboard/retail/', RetailAssignCylinderCreateView.as_view(), name='retail-cylinder-onboard'),
+    path('sme/cylinder-onboard/', SMEAssignCylinderCreateView.as_view(), name='cylinder-onboard'),
+    path('residential/cylinder-onboard/', ResidentialAssignCylinderCreateView.as_view(), name='residential-cylinder-onboard'),
 
     # assets list
     path("cylinders/", CylinderListView.as_view(), name='cylinders'),
     path("smartscales/", SmartScaleListView.as_view(), name='smartscales'),
     path("smartboxes/", SmartBoxListView.as_view(), name='smartboxes'),
-    path("assigned-cylinders/retail/", RetailAssignedCylinderListView.as_view(), name='retailed-assigned-cylinders'),
+    path("residential/assigned-cylinders/", RetailAssignedCylinderListView.as_view(), name='retailed-assigned-cylinders'),
     path("assigned-cylinders/sme/", SMEAssignedCylinderListView.as_view(), name='sme-assigned-cylinders'),
     path("history/assigned-cylinders/<str:sme_id>/", SMEUserAssignedCylinderHistory.as_view(), name='assignedcy-history-by-sme'),
     path("history/assigned-cylinder/<str:cy_tag_id>/", AssignedCylinderHistory.as_view(), name='assignedcy-history-by-cy'),
@@ -34,3 +34,5 @@ urlpatterns = [
     path("delete-smartbox/<str:pk>", SmartBoxDeleteView.as_view(), name='delete-smartbox'),
     path("update-smartbox/<str:pk>", SmartBoxUpdateView.as_view(), name='update-smartbox'),
 ]
+
+# After creating assets, they're by default unassigned. Onboarding

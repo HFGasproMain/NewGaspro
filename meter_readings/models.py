@@ -2,6 +2,17 @@ from django.db import models
 from accounts.models import User
 
 # Create your models here.
+class TestGasReading(models.Model):
+    meter = models.CharField(max_length=20, null=True, blank=True)
+    total_quantity_used = models.FloatField(null=True, blank=True)
+    quantity_remaining = models.FloatField(null=True, blank=True)
+    battery_remaining = models.DecimalField(decimal_places=2, max_digits=6)
+    last_push = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.meter
+
+
 reading_transmit_type = (
         ('time', 'time'),
         ('flow', 'flow')

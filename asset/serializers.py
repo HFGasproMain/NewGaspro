@@ -15,7 +15,9 @@ from .models import Cylinder, SMEAssignCylinder, SmartBox, SmartScale, RetailAss
 class CylinderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cylinder
-        fields = '__all__'
+        #fields = '__all__'
+        fields = ['cylinder_serial_number', 'cylinder_type', 'cylinder_weight', 'manufacturer', 'cylinder_tar_weight', 
+        'manufacture_date', 'maintenance_date']
         #exclude = ('cylinder_status',)
 
 class CylinderListSerializer(serializers.ModelSerializer):
@@ -42,7 +44,7 @@ class SMEAssignCylinderSerializer(serializers.ModelSerializer):
 
     
 
-class RetailAssignCylinderSerializer(serializers.ModelSerializer):
+class ResidentialAssignCylinderSerializer(serializers.ModelSerializer):
     cylinder = serializers.PrimaryKeyRelatedField(queryset=Cylinder.objects.filter(cylinder_status='unassigned'))
     smart_box = serializers.PrimaryKeyRelatedField(queryset=SmartBox.objects.filter(smartbox_status='unassigned'))
     print('SmartBox[[]]', smart_box)
@@ -61,7 +63,8 @@ class SmartScaleSerializer(serializers.ModelSerializer):
 class SmartBoxSerializer(serializers.ModelSerializer):
     class Meta:
         model = SmartBox
-        fields = '__all__'
+        fields = ['box_id', 'manufacturer']
+        #fields = '__all__'
 
 """
 # class QuestionnaireSerializer(serializers.ModelSerializer):

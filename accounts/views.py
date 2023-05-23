@@ -7,12 +7,21 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from django.contrib.sites.shortcuts import get_current_site
+from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+#from django.utils.encoding import force_bytes, force_text
+from django.utils.encoding import force_str, force_bytes
+
 #from asset.models import Cylinder, AssignCylinder
 #from asset.serializers import CylinderSerializer
 
 from .serializers import SMEUserRegistrationSerializer, StaffUserRegistrationSerializer, AdminLoginSerializer, \
 	UserLoginSerializer, UserListSerializer, UserSerializer, OpsDeliverySerializer, ResidentUserRegistrationSerializer, \
-    SME2ListSerializer, UserUpdateSerializer, ResidentialUserSerializer
+    SME2ListSerializer, UserUpdateSerializer, ResidentialUserSerializer, PasswordChangeSerializer, PasswordResetSerializer, \
+    PasswordResetConfirmSerializer
     #InvestorSerializer, InvestorClientRequestSerializer, InvestorClientSerializer, InvestorInterestSerializer, \
 
 from .models import User, SMEUser2
@@ -445,3 +454,55 @@ class UpdateUserProfileView(generics.UpdateAPIView):
         if serializer.is_valid():
             serializer.save()
         return Response(serializer.data)
+
+
+
+# Password change
+class PasswordChangeView(APIView):
+    serializer_class = PasswordChangeSerializer
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = PasswordChangeSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Password changed successfully."})
+        return Response(serializer.errors, status=400)
+
+
+# Password reset
+class PasswordResetView(generics.GenericAPIView):
+    serializer_class = PasswordResetSerializer
+
+    def post(self, request, *args, **kwargs):
+        email = request.data.get('email')
+        user = User.objects.get(email=email)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        token = default_token_generator.make_token(user)
+        current_site = get_current_site(request)
+        mail_subject = 'Reset your password'
+        message = render_to_string('password_reset_email.html', {
+            'user': user,
+            'domain': current_site.domain,
+            'uid': uid,
+            'token': token,
+        })
+        send_mail(mail_subject, message, 'from@example.com', [email])
+        return Response({'detail': 'Password reset email has been sent.'})
+
+
+class PasswordResetConfirmView(generics.GenericAPIView):
+    serializer_class = PasswordResetConfirmSerializer
+    
+    def post(self, request, *args, **kwargs):
+        uid = force_text(urlsafe_base64_decode(request.data.get('uid')))
+        token = request.data.get('token')
+        password = request.data.get('password')
+        user = User.objects.get(pk=uid)
+        if default_token_generator.check_token(user, token):
+            user.set_password(password)
+            user.save()
+            return Response({'detail': 'Password has been reset successfully.'})
+        else:
+            return Response({'detail': 'Invalid token.'})
+

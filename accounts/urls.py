@@ -3,7 +3,8 @@ from rest_framework_simplejwt import views as jwt_views
 from .views import (
     SMEUserRegistrationView, AdminUserRegistrationView, DeliveryUserRegistrationView, OperationsUserRegistrationView, 
     UserLoginView, UserListView, get_user_profile, AdminLoginView, get_ops_and_delivery, SMEUserListView, ResidentUserRegistrationView,
-    AdminUserListView, DeliveryUserListView, UpdateUserProfileView, delete_user, OpsDeliveryListView, ResidentialUsersListView
+    AdminUserListView, DeliveryUserListView, UpdateUserProfileView, delete_user, OpsDeliveryListView, PasswordChangeView, 
+    ResidentialUsersListView, PasswordResetView, PasswordResetConfirmView
 )
 
 urlpatterns =[
@@ -17,6 +18,12 @@ urlpatterns =[
     # Login
     path('login/', UserLoginView.as_view(), name='login'),
     path('admin/login', AdminLoginView.as_view(), name='admin-login'),
+
+    # Password change
+    path('change-password/', PasswordChangeView.as_view(), name='change-password'),
+    # Password reset
+    path('password-reset/', PasswordResetView.as_view(), name='password-reset'),
+    path('password-reset/confirm/', PasswordResetConfirmView.as_view(), name='password-reset-confirm'),
 
     # Users
     path('users/', UserListView.as_view(), name='users'),
@@ -32,14 +39,8 @@ urlpatterns =[
     path("update-profile/<str:user_id>", UpdateUserProfileView.as_view(), name='update-user'),
     path('delete-user/<str:user_id>', delete_user, name='delete-user'),
 
-    #jwt
+    # jwt
     path('token/obtain/', jwt_views.TokenObtainPairView.as_view(), name='token_create'),
     path('token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
     
 ]
-
-# {
-# 	# for me
-#     "refresh": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTY3NzU5Mjg3MiwiaWF0IjoxNjc3NTA2NDcyLCJqdGkiOiI5Y2I5NjMzOGUwYjA0MWE1YTI0NDgzZmM4NTZlZDg1YiIsInVzZXJfaWQiOjJ9.sJqP9a6ZOBxdBS6_LUhZl9Kb4mtLn86h2plJH1CxLSE",
-#     "access": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjc3NTA2NzcyLCJpYXQiOjE2Nzc1MDY0NzIsImp0aSI6IjBjNzA2ODY1NzE4ZDQyOWRiOTliNmY0YWIwNDhmYTk4IiwidXNlcl9pZCI6Mn0.vztUme2_-dr_BBDPiZot4layqJKL9zntwTImutMmSGs"
-# }

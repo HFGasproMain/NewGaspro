@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Range, SmartBoxReadings
+from .models import Range, SmartBoxReadings, TestGasReading
 from asset.models import Cylinder
 from asset.models import RetailAssignCylinder
 

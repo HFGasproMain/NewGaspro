@@ -34,6 +34,10 @@ urlpatterns = [
     path('api/v2/meter-readings/', include('meter_readings.urls')),
     path('api/v2/orders/', include('orders.urls')),
     path('api/v2/retailers/', include('retailers.urls')),
+    path('api/v2/wallet/', include('wallet.urls')),
+    path('api/v2/delivery/', include('delivery.urls')),
+
+
 
     # Default Auth
     path('api/v2/api-auth/', include('rest_framework.urls')),

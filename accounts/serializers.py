@@ -3,6 +3,9 @@ from django.contrib.auth.models import update_last_login
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.db import transaction
+from django.core.mail import send_mail
+from django.contrib.auth.password_validation import validate_password
+from django.contrib.auth.tokens import default_token_generator
 
 from .models import User, SMEUser2
 
@@ -124,7 +127,7 @@ class UserLoginSerializer(serializers.Serializer):
         #     raise serializers.ValidationError("Invalid login credentials")
 
         try:
-            if not user is None:
+            if user:
                 refresh = RefreshToken.for_user(user)
                 refresh_token = str(refresh)
                 access_token = str(refresh.access_token)
@@ -214,3 +217,36 @@ class SME2ListSerializer(serializers.ModelSerializer):
         exclude = ('groups', 'user_permissions', 'last_login', 'is_superuser', 'password')
 
 
+
+# Password change
+class PasswordChangeSerializer(serializers.Serializer):
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True, validators=[validate_password])
+    confirm_password = serializers.CharField(required=True)
+
+    def validate_old_password(self, value):
+        user = self.context['request'].user
+        if not user.check_password(value):
+            raise serializers.ValidationError("Invalid old password!")
+        return value
+
+    def validate(self, data):
+        if data['new_password'] != data['confirm_password']:
+            raise serializers.ValidationError("New passwords do not match!")
+        return data
+
+    def save(self):
+        user = self.context['request'].user
+        user.set_password(self.validated_data['new_password'])
+        user.save()
+
+
+# Password reset
+class PasswordResetSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+
+class PasswordResetConfirmSerializer(serializers.Serializer):
+    uid = serializers.CharField()
+    token = serializers.CharField()
+    new_password = serializers.CharField()

@@ -11,7 +11,7 @@ from .models import Cylinder, SmartScale, SmartBox, SMEAssignCylinder, RetailAss
 from meter_readings.models import SmartBoxMonitor, SmartScaleMonitor, SmartBoxReadings
 
 from .serializers import CylinderSerializer, CylinderListSerializer, SMEAssignCylinderSerializer, \
-	SmartScaleSerializer, SmartBoxSerializer, RetailAssignCylinderSerializer
+	SmartScaleSerializer, SmartBoxSerializer, ResidentialAssignCylinderSerializer
 
 """
 All Assets Related Views
@@ -102,13 +102,13 @@ class SMEAssignCylinderCreateView(generics.CreateAPIView):
     	return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class RetailAssignCylinderCreateView(generics.CreateAPIView):
-    """ Onboard A Cylinder To A Retail User """
-    serializer_class = RetailAssignCylinderSerializer
+class ResidentialAssignCylinderCreateView(generics.CreateAPIView):
+    """ Onboard A HF Cylinder To A Residential User """
+    serializer_class = ResidentialAssignCylinderSerializer
     permission_classes = (AllowAny,)
 
     def post(self, request, *args, **kwargs):
-    	serializer = RetailAssignCylinderSerializer(data=request.data)
+    	serializer = ResidentialAssignCylinderSerializer(data=request.data)
     	
     	if serializer.is_valid():  
 	   		# Change status of onboarded assets to assigned
@@ -133,7 +133,7 @@ class RetailAssignCylinderCreateView(generics.CreateAPIView):
 class RetailAssignedCylinderListView(generics.ListAPIView):
 	""" All Retail Users Assigned Cylinders """
 	queryset = RetailAssignCylinder.objects.all()
-	serializer_class = RetailAssignCylinderSerializer
+	serializer_class = ResidentialAssignCylinderSerializer
 	permission_classes = (AllowAny,)
 
 

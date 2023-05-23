@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'meter_readings',
     'retailers',
     'orders',
+    'wallet',
+    'delivery',
     
     # Dependencies
     'rest_framework',
@@ -113,6 +115,27 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
 ]
+
+
+# SMTP Email Configuration
+#EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST = 'your_smtp_host' 
+EMAIL_PORT = 587 
+EMAIL_HOST_USER = 'your_email@example.com' 
+EMAIL_HOST_PASSWORD = 'your_email_password' 
+EMAIL_USE_TLS = True 
+
+# Default email address for sending emails
+DEFAULT_FROM_EMAIL = 'your_email@example.com'
+
+# Password reset email settings
+PASSWORD_RESET_TIMEOUT_DAYS = 1 
+
+# Email template
+EMAIL_TEMPLATE_NAME = 'registration/password_reset_email.html'
+
+
 
 # Spectacular Customization
 
