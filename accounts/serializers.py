@@ -25,7 +25,7 @@ class ResidentialUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id','first_name', 'last_name', 'phone_number', 'email',  "referral_code", \
-        'date_for_your_onboarding', 'date_joined', 'referred_by']
+        'date_for_your_onboarding', 'date_joined', 'referred_by', 'subscription_status']
 
 
 class SMEUserRegistrationSerializer(serializers.ModelSerializer):
