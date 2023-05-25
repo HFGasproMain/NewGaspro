@@ -103,7 +103,8 @@ class ResidentUserRegistrationView(APIView):
     def post(self, request):
         #global assignment
         #the_referral = ''
-        referral_code = request.POST.get('any_referral_code')
+        #referral_code = request.POST.get('any_referral_code')
+        referral_code = request.data.get('any_referral_code')
         print(f'initial reffered_by => {referral_code}')
 
         if request.data.get('first_name') is None or request.data.get('last_name') is None:
@@ -129,6 +130,7 @@ class ResidentUserRegistrationView(APIView):
 
         if referral_code:
             # validate the credibility of the referral_code
+            print('referral_code is given')
             try:
                 the_referral = User.objects.filter(referral_code=request.data.get('any_referral_code')).first()
                 # referral_code is valid
