@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import CylinderCreateView, CylinderListView, CylinderDeleteView, CylinderUpdateView, SMEAssignedCylinderListView, \
 	SmartScaleCreateView, SmartScaleListView, SmartScaleDeleteView, SmartScaleUpdateView, SmartBoxCreateView, \
-	 SmartBoxDeleteView, SmartBoxUpdateView, SmartBoxListView, SMEAssignCylinderCreateView, RetailAssignedCylinderListView, \
+	 SmartBoxDeleteView, SmartBoxUpdateView, SmartBoxListView, SMEAssignCylinderCreateView, ResidentialAssignedCylinderListView, \
      SMEUserAssignedCylinderHistory, AssignedCylinderHistory, ResidentialAssignCylinderCreateView, CylinderDetailView, \
      cylinder_detail_view, OtherBillableAssetsCreateView, GasPriceCreateView, OtherBillableAssetsListView, GasPriceListView, \
      OtherBillableAssetsUpdateView, GasPriceUpdateView
@@ -20,7 +20,7 @@ urlpatterns = [
     path("cylinders/", CylinderListView.as_view(), name='cylinders'),
     path("smartscales/", SmartScaleListView.as_view(), name='smartscales'),
     path("smartboxes/", SmartBoxListView.as_view(), name='smartboxes'),
-    path("residential/assigned-cylinders/", RetailAssignedCylinderListView.as_view(), name='retailed-assigned-cylinders'),
+    path("residential/assigned-cylinders/", ResidentialAssignedCylinderListView.as_view(), name='retailed-assigned-cylinders'),
     path("assigned-cylinders/sme/", SMEAssignedCylinderListView.as_view(), name='sme-assigned-cylinders'),
     path("history/assigned-cylinders/<str:sme_id>/", SMEUserAssignedCylinderHistory.as_view(), name='assignedcy-history-by-sme'),
     path("history/assigned-cylinder/<str:cy_tag_id>/", AssignedCylinderHistory.as_view(), name='assignedcy-history-by-cy'),
@@ -43,5 +43,3 @@ urlpatterns = [
     path("delete-smartbox/<str:pk>", SmartBoxDeleteView.as_view(), name='delete-smartbox'),
     path("update-smartbox/<str:pk>", SmartBoxUpdateView.as_view(), name='update-smartbox'),
 ]
-
-# After creating assets, they're by default unassigned. Onboarding

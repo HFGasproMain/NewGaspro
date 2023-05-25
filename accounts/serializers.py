@@ -24,7 +24,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 class ResidentialUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'phone_number', 'email',  "referral_code", \
+        fields = ['id','first_name', 'last_name', 'phone_number', 'email',  "referral_code", \
         'date_for_your_onboarding', 'date_joined', 'referred_by']
 
 

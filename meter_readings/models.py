@@ -1,16 +1,19 @@
 from django.db import models
 from accounts.models import User
+from asset.models import RetailAssignCylinder, SmartBox, Cylinder
 
 # Create your models here.
-class TestGasReading(models.Model):
-    meter = models.CharField(max_length=20, null=True, blank=True)
-    total_quantity_used = models.FloatField(null=True, blank=True)
+class CollectGasReading(models.Model):
+    smart_box_id = models.CharField(max_length=20, null=True, blank=True)
+    quantity_used = models.FloatField(null=True, blank=True)
     quantity_remaining = models.FloatField(null=True, blank=True)
     battery_remaining = models.DecimalField(decimal_places=2, max_digits=6)
+    longitude = models.CharField(max_length=20, null=True, blank=True, default="0")
+    latitude = models.CharField(max_length=20, null=True, blank=True, default="0")
     last_push = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.meter
+        return self.smart_box_id
 
 
 reading_transmit_type = (
@@ -20,7 +23,7 @@ reading_transmit_type = (
 
 class SmartBoxReadings(models.Model):
     user = models.CharField(max_length=20, null=True, blank=True)
-    smart_box = models.CharField(max_length=20)
+    smart_box_id = models.CharField(max_length=20)
     weight = models.FloatField(max_length=10, null=True)
     quantity_supplied = models.FloatField(max_length=10, null=True, blank=True, default="0")
     quantity_used = models.FloatField(max_length=10, null=True, blank=True)
@@ -50,9 +53,10 @@ class SmartBoxReadings(models.Model):
 #12kg; cylinder = 12kg, cylinder_tare_weight = initial_cylinder_weight
 
 
-class NewReading(models.Model):
+class ActivatedSmartBoxReading(models.Model):
     user = models.CharField(max_length=20, null=True, blank=True)
-    smart_scale = models.CharField(max_length=20)
+    smart_box = models.ForeignKey(RetailAssignCylinder, on_delete=models.SET_NULL, null=True, related_name="activated_smartbox")
+    cylinder = models.ForeignKey(RetailAssignCylinder, on_delete=models.SET_NULL, null=True, related_name="activated_cylinder")
     weight = models.FloatField(max_length=10)
     quantity_supplied = models.FloatField(max_length=10, null=True, blank=True, default="0")
     quantity_used = models.FloatField(max_length=10, null=True, blank=True)
@@ -66,7 +70,7 @@ class NewReading(models.Model):
     max_value = models.CharField(max_length=20, null=True, blank=True, default="0")
     longitude = models.CharField(max_length=20, null=True, blank=True, default="0")
     latitude = models.CharField(max_length=20, null=True, blank=True, default="0")
-    asset_type = models.CharField(max_length=20, default="smart scale")
+    asset_type = models.CharField(max_length=20, default="smart_box")
     last_push = models.DateTimeField(auto_now_add=True)
 
     class Meta:

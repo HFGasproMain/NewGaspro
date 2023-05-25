@@ -33,13 +33,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     referral_code = models.CharField(max_length=6, unique=True, null=True, blank=True)
     referred_by = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL)
     any_referral_code = models.CharField(max_length=7, null=True, blank=True)
-    user_class = models.CharField(max_length=30, null=True, blank=True, default='Retail Clients')
+    user_class = models.CharField(max_length=30, null=True, blank=True, default='Residential Customers')
     date_to_onboard = models.DateField(null=True)
     address = models.TextField(null=True)
     lga = models.CharField(max_length=100, null=True)
     state = models.CharField(max_length=100, null=True)
     is_staff = models.BooleanField(default=False)
-    date_for_your_onboarding = models.DateField(auto_now=True)
+    date_for_your_onboarding = models.DateField()
     date_joined = models.DateTimeField(auto_now=True)
     
     USERNAME_FIELD = 'phone_number'

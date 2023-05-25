@@ -1,14 +1,23 @@
 from rest_framework import serializers
-from .models import Range, SmartBoxReadings, TestGasReading
-from asset.models import Cylinder
+from .models import Range, SmartBoxReadings, CollectGasReading, ActivatedSmartBoxReading
+from asset.models import Cylinder, SmartScale, SmartBox
 from asset.models import RetailAssignCylinder
 
 
 class SmartBoxReadingsSerializer(serializers.ModelSerializer):
+    ''' API to Show Gas Readings from User Smart Box  '''
     class Meta:
         model = SmartBoxReadings
         # fields = '__all__'
-        fields = ("smart_box", "quantity_supplied", "quantity_used", "quantity_remaining", "battery_remaining")
+        fields = ("smart_box_id", "quantity_used", "battery_remaining", "longitude", "latitude" )
+
+
+class CollectGasReadingsSerializer(serializers.ModelSerializer):
+    ''' API to Save Live Gas Readings from User Smart Box  '''
+    class Meta:
+        model = CollectGasReading
+        #fields = '__all__'
+        fields = ("smart_box_id", "quantity_used", "battery_remaining", "longitude", "latitude" )
 
 
 class AssignedSmartBoxReadingsSerializer(serializers.ModelSerializer):
@@ -17,6 +26,17 @@ class AssignedSmartBoxReadingsSerializer(serializers.ModelSerializer):
         cylinder = serializers.PrimaryKeyRelatedField(queryset=Cylinder.objects.filter(cylinder_status='unassigned'))
         fields = '__all__'
         #fields = ("smart_box", "quantity_supplied", "quantity_used", "quantity_remaining", "battery_remaining")
+
+
+class ActivatedSmartboxReadingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ActivatedSmartBoxReading
+        smart_box = serializers.PrimaryKeyRelatedField(queryset=SmartBox.objects.filter(smartbox_status='assigned'))
+        cylinder = serializers.PrimaryKeyRelatedField(queryset=Cylinder.objects.filter(cylinder_status='assigned'))
+        #get_user = serializers.PrimaryKeyRelatedField(queryset=RetailAssignCylinder.objects.filter(user=''))
+
+        fields = ("smart_box", "quantity_used", "battery_remaining", "longitude", "latitude" )
+
 
 
 class ReadingOutputSerializer(serializers.ModelSerializer):

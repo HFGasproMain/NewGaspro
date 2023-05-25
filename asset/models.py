@@ -12,24 +12,32 @@ class Cylinder(models.Model):
     cy_status = (
         ('assigned', 'assigned'),
         ('unassigned', 'unassigned'))
-    cylinder_type = models.CharField(max_length=20, choices=cy_types, blank=True)
+    cylinder_capacity = models.CharField(max_length=20, choices=cy_types, blank=True)
     cylinder_serial_number = models.CharField(max_length=20, primary_key=True)
-    cylinder_weight = models.FloatField()
+    #gas_content = models.CharField() # two types of gas_content => contentF & gas_remnant (contentF - 0.3kg)
+    cylinder_total_weight = models.FloatField() # tare_weight + gas_content
     cylinder_status = models.CharField(max_length=20, choices=cy_status, blank=True, default='unassigned')
-    manufacturer = models.CharField(max_length=30, default="Amaze Gas")
+    manufacturer = models.CharField(max_length=30, default="Homefort Energy")
     cylinder_tar_weight = models.DecimalField(max_length=10, max_digits=10, decimal_places=2)
-    manufacture_date = models.DateField() # date it was manufactured
+    manufactured_date = models.DateField() # date it was manufactured
     date_added = models.DateField(auto_now_add=True) # date it was added to the warehouse 
     maintenance_date = models.DateField()
+    # actor that register it, total_weight & actor/location of the cyinder are what you're tracking.
+    # actors: customer, DO, RO, HQ--> Logistic officer, plant, maintenance hub, storage
+    #RO audit DO. LO audit RO.
     
     def __str__(self):
         return '{},{}'.format(self.cylinder_serial_number, self.cylinder_status)
+
+    def get_cylinder_total_weight(self):
+        self.cylinder_weight = self.cylinder_tar_weight + self.cylinder_type
+        return self.cylinder_weight
 
     class Meta:
         ordering = ['-date_added']
 
 
-#cy_tare_weight = initial_cy_weight, cy_total_weight = cy_tare_weight + capacity/gas content, 
+# cy_tare_weight = initial_cy_weight, cy_total_weight = cy_tare_weight + capacity/gas content, 
 # qty_gas_left = cy_total_weight - cy_tare_weight
 # deduct remnant from old bottle from content/capacity of new bottle => qty delivered & qty billable.
 
@@ -85,7 +93,7 @@ class RetailAssignCylinder(models.Model):
     assigned_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return str(self.user)
+        return '{},{},{}'.format(str(self.user), str(self.cylinder), str(self.smart_box))
 
     class Meta:
         ordering = ('-assigned_date',)

@@ -132,8 +132,8 @@ class ResidentialAssignCylinderCreateView(generics.CreateAPIView):
     	return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class RetailAssignedCylinderListView(generics.ListAPIView):
-	""" All Retail Users Assigned Cylinders """
+class ResidentialAssignedCylinderListView(generics.ListAPIView):
+	""" All Residential Users Assigned Assets (Cylinders & SmartBoxes) """
 	queryset = RetailAssignCylinder.objects.all()
 	serializer_class = ResidentialAssignCylinderSerializer
 	permission_classes = (AllowAny,)

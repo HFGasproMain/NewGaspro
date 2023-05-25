@@ -1,26 +1,96 @@
 import datetime
 import uuid
 import requests
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.decorators import api_view
 from asset.models import RetailAssignCylinder
-from .models import SmartBoxReadings, Range
-from .serializers import SmartBoxReadingsSerializer, RangeSerializer, AssignedSmartBoxReadingsSerializer
+from .models import SmartBoxReadings, Range, ActivatedSmartBoxReading, CollectGasReading
+from .serializers import SmartBoxReadingsSerializer, RangeSerializer, AssignedSmartBoxReadingsSerializer, \
+ ActivatedSmartboxReadingSerializer, CollectGasReadingsSerializer
 from rest_framework.response import Response
 
 
-class CreateReadingView(generics.CreateAPIView):
-    queryset = SmartBoxReadings.objects.all()
-    serializer_class = SmartBoxReadingsSerializer
+
+# All Views Here
+class CollectGasReadingView(generics.CreateAPIView):
+    """ API to Get Live SmartBox Readings From SmartBox Hardware/Device """
+    queryset = CollectGasReading.objects.all()
+    serializer_class = CollectGasReadingsSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = SmartBoxReadingsSerializer(data=request.data)
+        if serializer.is_valid():
+            which_smart_box = request.data.get('smart_box_id')
+            print(f'smart_box_id_received => {which_smart_box}')
+            qty_used = request.data.get('quantity_used')
+            battery_remaining = request.data.get('battery_remaining')
+            longitude = request.data.get('longitude')
+            latitude = request.data.get('latitude')
+
+            # Perform all calculations
+            assigned_meter = RetailAssignCylinder.objects.filter(smart_box=which_smart_box)
+
+            if RetailAssignCylinder.objects.filter(smart_box=which_smart_box).exists():
+                print('Loading ...! SmartBox Exists!! ... Gas Reading Activated!!!')
+                get_smartbox = RetailAssignCylinder.objects.filter(smart_box=which_smart_box).first()
+                print(f'smart_box_id_comparing... => {get_smartbox}')
+                get_cylinder = RetailAssignCylinder.objects.filter(smart_box=which_smart_box).first()
+                print(f'cylinder_comparing... => {get_cylinder}')
+                get_user = RetailAssignCylinder.objects.filter()
+                cylinder_attached_to_smartbox = ActivatedReading.objects.create(
+                    smart_box_id = None
+                )
+                return Response({"message": "success", "data": serializer.data}, status=status.HTTP_200_OK)
+                #RetailAssignCylinder.DoesNotExist:
+            return Response({"message": "Cylinder not found!"}, status=status.HTTP_400_BAD_REQUEST)
+
+'''
+1. unassigned cylinder a
+2. onboard/assign cylinder & meter a
+3. get reading from that assigned meter and get the 
+'''
+
+
+class CreateActivatedSmartboxReadingView(generics.CreateAPIView):
+    """ API to Create SmartBox Readings From SmartBox Hardware/Device """
+    queryset = ActivatedSmartBoxReading.objects.all()
+    serializer_class = ActivatedSmartboxReadingSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = SmartBoxReadingsSerializer(data=request.data)
+        if serializer.is_valid():
+            which_smartbox = request.data.get('smart_box_id')
+            qty_used = request.data.get('quantity_used')
+            battery_remaining = request.data.get('battery_remaining')
+            longitude = request.data.get('longitude')
+            latitude = request.data.get('latitude')
+
+            # Perform calculations
+            
+            if RetailAssignCylinder.objects.filter(smart_box=which_smartbox).exists():
+                print('Loading ...! SmartBox Exists!! ... Gas Reading Activated!!!')
+
+                cylinder_attached_to_smartbox = ActivatedReading.objects.create(
+                    smart_box_id = None
+                )
+            pass
+
 
 
 class SmartBoxDefaultReadingsView(generics.ListAPIView):
-    """ API For Default SmartBox Readings """
+    """ API For Unassigned/Default SmartBox Readings """
     queryset = SmartBoxReadings.objects.all()
     serializer_class = SmartBoxReadingsSerializer
 
+# Activated Smartbox Readings
+class ActivatedSmartBoxReadingsListView(generics.ListAPIView):
+    """ API For Activated SmartBox Readings """
+    queryset = ActivatedSmartBoxReading.objects.all()
+    serializer_class = ActivatedSmartboxReadingSerializer
 
-class AssignedSmartBoxReadingsView(generics.ListAPIView): 
+
+class AssignedSmartBoxReadingsView(generics.ListAPIView):
+    """ API For Onboarded & Assigned SmartBox Readings """ 
     queryset = RetailAssignCylinder.objects.all()
     serializer_class = AssignedSmartBoxReadingsSerializer
 

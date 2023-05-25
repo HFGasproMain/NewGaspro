@@ -35,7 +35,7 @@ urlpatterns =[
     path('ops-delivery/', OpsDeliveryListView.as_view(), name='ops-delivery'),
     
     # Single User
-    path("user-profile/<str:user_id>", get_user_profile, name='user-profile'),
+    path("user-profile/<str:user_id>/", get_user_profile, name='user-profile'),
     path("update-profile/<str:user_id>", UpdateUserProfileView.as_view(), name='update-user'),
     path('delete-user/<str:user_id>', delete_user, name='delete-user'),
 

@@ -102,6 +102,7 @@ class ResidentUserRegistrationView(APIView):
 
     def post(self, request):
         #global assignment
+        #the_referral = ''
         referral_code = request.POST.get('any_referral_code')
         print(f'initial reffered_by => {referral_code}')
 
@@ -112,6 +113,9 @@ class ResidentUserRegistrationView(APIView):
             return Response({"message": "Phone number cannot be empty!"}, status=status.HTTP_400_BAD_REQUEST) 
 
         if request.data.get('email') is None:
+            return Response({"message": "Email address cannot be empty!"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if request.data.get('email') is None:
             return Response({"message": "Email address cannot be empty!"}, status=status.HTTP_400_BAD_REQUEST) 
 
         if request.data.get('date_for_your_onboarding') is None:
@@ -120,31 +124,59 @@ class ResidentUserRegistrationView(APIView):
         if User.objects.filter(phone_number=request.data.get('phone_number')).exists():
             return Response({"message": "User with this phone number already exists!"}, status=status.HTTP_400_BAD_REQUEST)
 
-        the_referral = User.objects.filter(referral_code=request.data.get('any_referral_code')).first()
-        print(f'the referral => {the_referral}')
-        if the_referral is None:
-            return Response({"message": "User with this referral code doesn't exists!"}, status=status.HTTP_400_BAD_REQUEST)
+        if User.objects.filter(email=request.data.get('email')).exists():
+            return Response({"message": "User with this email address already exists!"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # meta data
-        role = 5
-        referred_by = the_referral
-        serializer = self.serializer_class(data=request.data)
-        valid = serializer.is_valid(raise_exception=True)
+        if referral_code:
+            # validate the credibility of the referral_code
+            try:
+                the_referral = User.objects.filter(referral_code=request.data.get('any_referral_code')).first()
+                # referral_code is valid
+                if the_referral:
+                    print(f'the REAL referral => {the_referral}')
+                    role = 5
+                    referred_by = the_referral
+                    serializer = self.serializer_class(data=request.data)
+                    valid = serializer.is_valid(raise_exception=True)
 
-        if valid:
-            serializer.save(role=role, referred_by=the_referral)
-            print(serializer.data)
-            response = {
-                'success': True,
-                'statusCode': status.HTTP_201_CREATED,
-                'message': 'User successfully registered!',
-                'user_info': serializer.data,
-                #'referral_code': user.referral_code
-            }
-            return Response(response, status=status.HTTP_201_CREATED)
+                    if valid:
+                        serializer.save(role=role, referred_by=the_referral)
+                        print(serializer.data)
+                        response = {
+                            'success': True,
+                            'statusCode': status.HTTP_201_CREATED,
+                            'message': 'User successfully registered!',
+                            'user_info': serializer.data,
+                            #'referral_code': user.referral_code
+                        }
+                        return Response(response, status=status.HTTP_201_CREATED)
+                    else:
+                        return Response({"message": "User not created. Please review your details and try again!"},
+                                        status=status.HTTP_400_BAD_REQUEST)
+            except AttributeError:
+                return Response({"message": "User with this referral code doesn't exists!"}, status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response({"message": "No user enabled to create questionnaire and wallet"},
-                            status=status.HTTP_400_BAD_REQUEST)
+            # No referral_code available
+            print(f'the EMPTY referral')
+            role = 5
+            #referred_by = the_referral
+            serializer = self.serializer_class(data=request.data)
+            valid = serializer.is_valid(raise_exception=True)
+
+            if valid:
+                serializer.save(role=role)
+                print(serializer.data)
+                response = {
+                    'success': True,
+                    'statusCode': status.HTTP_201_CREATED,
+                    'message': 'User successfully registered!',
+                    'user_info': serializer.data,
+                }
+                return Response(response, status=status.HTTP_201_CREATED)
+            else:
+                return Response({"message": "User not created. Please review your details and try again!"},
+                                status=status.HTTP_400_BAD_REQUEST)
+    
 
 
 
