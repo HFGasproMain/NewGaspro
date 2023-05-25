@@ -39,6 +39,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     lga = models.CharField(max_length=100, null=True)
     state = models.CharField(max_length=100, null=True)
     is_staff = models.BooleanField(default=False)
+    subscription_status = models.BooleanField(default=False)
     date_for_your_onboarding = models.DateField()
     date_joined = models.DateTimeField(auto_now=True)
     
