@@ -46,7 +46,7 @@ class Cylinder(models.Model):
 
     # actor that register it, total_weight & actor/location of the cyinder are what you're tracking.
     # actors: customer, DO, RO, HQ--> Logistic officer, plant, maintenance hub, storage
-    #RO audit DO. LO audit RO.
+    #RO audit DO. LO audit RO
     
     def __str__(self):
         return '{},{}'.format(self.cylinder_serial_number, self.cylinder_status)
