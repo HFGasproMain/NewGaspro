@@ -12,7 +12,7 @@ from meter_readings.models import SmartBoxMonitor, SmartScaleMonitor, SmartBoxRe
 
 from .serializers import CylinderSerializer, CylinderListSerializer, SMEAssignCylinderSerializer, \
 	SmartScaleSerializer, SmartBoxSerializer, ResidentialAssignCylinderSerializer, OtherBillableAssetsSerializer, \
-	GasPriceSerializer
+	GasPriceSerializer, CylinderDetailSerializer
 
 
 """
@@ -21,10 +21,26 @@ All Assets Related Views
 
 # Unassigned Cylinder Views.
 class CylinderCreateView(generics.CreateAPIView):
-	""" Create Unassigned Cylinder """
+	""" API to Register a New Cylinder """
 	queryset = Cylinder.objects.all()
 	serializer_class = CylinderSerializer
 	permission_classes = (AllowAny,)
+
+	def post(self, request, *args, **kwargs):
+		actor = request.data.get('current_actor')
+		location = request.data.get('location')
+		serializer = CylinderSerializer(data=request.data)
+
+		# validate to ensure field enforcement
+		if actor != 'HQ' and location:
+			return Response({"message": "Location should not be provided for non-HQ actors."}, 
+				status=status.HTTP_400_BAD_REQUEST)
+
+		if serializer.is_valid():
+			serializer.save()
+			return Response({"message": "success", "data": serializer.data}, status=status.HTTP_200_OK)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class CylinderListView(generics.ListAPIView):
 	""" All Cylinders """
@@ -45,10 +61,10 @@ class CylinderDetailView(generics.RetrieveAPIView):
 @api_view(['GET'])
 @permission_classes((AllowAny,))
 def cylinder_detail_view(self, cylinder):
-    """ Cylinder Detail View """
+    """ API for Cylinder Detail by Cyinder_Serial_Number """
     try:
         cylinder = Cylinder.objects.get(cylinder_serial_number=cylinder)
-        cylinder_serializer = CylinderSerializer(cylinder)
+        cylinder_serializer = CylinderDetailSerializer(cylinder)
         return Response({"message": "success", "data": cylinder_serializer.data}, status=status.HTTP_200_OK)
     except Cylinder.DoesNotExist:
         return Response({"message": "Cylinder not found!"},

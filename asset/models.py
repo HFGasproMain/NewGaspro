@@ -1,5 +1,6 @@
 from django.db import models
 from accounts.models import User
+from django.utils import timezone
 
 # Create your models here.
 
@@ -12,16 +13,37 @@ class Cylinder(models.Model):
     cy_status = (
         ('assigned', 'assigned'),
         ('unassigned', 'unassigned'))
-    cylinder_capacity = models.CharField(max_length=20, choices=cy_types, blank=True)
-    cylinder_serial_number = models.CharField(max_length=20, primary_key=True)
-    #gas_content = models.CharField() # two types of gas_content => contentF & gas_remnant (contentF - 0.3kg)
-    cylinder_total_weight = models.FloatField() # tare_weight + gas_content
+    location_choices = (
+        ('storage', 'storage'),
+        ('plant','plant'),
+        ('maintenance_hub', 'maintenance_hub'),
+        ('logistic_officer', 'logistic_officer')
+        )
+    actor_choices = (
+        ('DO','DO'),
+        ('RO', 'RO'),
+        ('HQ', 'HQ'),
+        ('RU', 'RU')
+        )
+    gas_content_choices = (
+        ('contentF', 'contentF'),
+        ('remnant', 'remnant')
+        )
+    cylinder_capacity = models.CharField(max_length=5, choices=cy_types, blank=True)
+    cylinder_serial_number = models.CharField(max_length=10, primary_key=True)
+    cylinder_gas_content = models.DecimalField(decimal_places=2, max_digits=5, null=True, default=12.00) # two types of gas_content => contentF & gas_remnant (contentF - 0.3kg)
+    cylinder_total_weight = models.DecimalField(max_digits=5, decimal_places=2)
     cylinder_status = models.CharField(max_length=20, choices=cy_status, blank=True, default='unassigned')
     manufacturer = models.CharField(max_length=30, default="Homefort Energy")
-    cylinder_tar_weight = models.DecimalField(max_length=10, max_digits=10, decimal_places=2)
+    cylinder_tare_weight = models.DecimalField(max_digits=5, decimal_places=2)
     manufactured_date = models.DateField() # date it was manufactured
     date_added = models.DateField(auto_now_add=True) # date it was added to the warehouse 
     maintenance_date = models.DateField()
+    current_actor = models.CharField(max_length=2, choices=actor_choices, default='HQ')
+    location = models.CharField(max_length=20, choices=location_choices, null=True, blank=True, default='storage')
+    expiry_status = models.BooleanField(default=False)
+    gas_content_type = models.CharField(max_length=10, choices=gas_content_choices, null=True, default='contentF')
+
     # actor that register it, total_weight & actor/location of the cyinder are what you're tracking.
     # actors: customer, DO, RO, HQ--> Logistic officer, plant, maintenance hub, storage
     #RO audit DO. LO audit RO.
@@ -29,9 +51,32 @@ class Cylinder(models.Model):
     def __str__(self):
         return '{},{}'.format(self.cylinder_serial_number, self.cylinder_status)
 
-    def get_cylinder_total_weight(self):
-        self.cylinder_weight = self.cylinder_tar_weight + self.cylinder_type
-        return self.cylinder_weight
+    def save(self, *args, **kwargs):
+        # Sum cylinder_wotal_weight
+        self.cylinder_total_weight = self.cylinder_tare_weight + self.cylinder_gas_content
+        
+        # Calculate the maintenance_date and expiry_status
+        self.maintenance_date = self.manufactured_date + timezone.timedelta(days=365 * 10)
+        if self.maintenance_date < timezone.now().date():
+            self.expiry_status = True
+
+        # Find gas_content_level
+        if self.pk is None:
+            # New instance being created
+            self.gas_content_type = 'contentF'
+        else:
+            try:
+                existing_instance = Cylinder.objects.get(pk=self.pk)
+            except Cylinder.DoesNotExist:
+                # Existing instance not found
+                print('Cylinder DoesNotExist!')
+                pass
+            else:
+                if self.cylinder_gas_content < existing_instance.cylinder_gas_content - 0.3:
+                    self.gas_content_type = 'remnant'
+                else:
+                    self.gas_content_type = 'contentF'
+        super().save(*args, **kwargs)
 
     class Meta:
         ordering = ['-date_added']

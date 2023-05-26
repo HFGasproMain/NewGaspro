@@ -16,14 +16,44 @@ class CylinderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cylinder
         #fields = '__all__'
-        fields = ['cylinder_serial_number', 'cylinder_type', 'cylinder_weight', 'manufacturer', 'cylinder_tar_weight', 
-        'manufacture_date', 'maintenance_date']
-        #exclude = ('cylinder_status',)
+        fields = ['cylinder_serial_number', 'cylinder_capacity', 'cylinder_gas_content', 'cylinder_tare_weight', 'manufacturer',
+        'manufactured_date', 'current_actor', 'location']
+        read_only_fields = ['cylinder_total_weight']
+
+
+        def to_representation(self, instance):
+            representation = super().to_representation(instance)
+            actor = representation.get('current_actor')
+
+            if actor == 'HQ':
+                representation['location'] = self.fields['location'].to_representation(instance.location)
+            else:
+                representation.pop('location', None)
+
+            return representation
+
+        # def validate(self, data):
+        #     actor = data.get('current_actor')
+        #     location = data.get('location')
+
+        #     if actor != 'HQ' and location:
+        #         raise serializers.ValidationError("Location should not be provided for non-HQ actors.")
+
+        #     return data
+
 
 class CylinderListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cylinder
         fields = '__all__'
+
+
+class CylinderDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cylinder
+        fields = ["cylinder_serial_number", "cylinder_capacity", "cylinder_gas_content", "cylinder_tare_weight", \
+            "cylinder_total_weight", "manufacturer", "manufactured_date", "maintenance_date", "current_actor", \
+              "expiry_status", "gas_content_type", "location"]
 
 
 class UnassignedCylindersChoiceField(ModelChoiceField):
