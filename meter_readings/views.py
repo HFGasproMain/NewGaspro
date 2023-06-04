@@ -153,18 +153,6 @@ class UserGasReadingListView(generics.ListAPIView):
 3. get reading from that assigned meter and get the 
 '''
 
-# class GasReadingHistorysAPIView(generics.RetrieveAPIView):
-#     serializer_class = CollectGasReadingsSerializer
-
-   
-#     meter_id = self.kwargs['smart_box_id']
-#     print(f'checking meter_id.. => {meter_id}')
-#         if not CollectGasReading.objects.filter(smart_meter_id=meter_id).exists():
-#             return Response({"message": "meter_id not found!"}, status=status.HTTP_400_BAD_REQUEST)
-#         smart_box_id = self.kwargs['smart_box_id']  # Assuming the smart_box_id is passed as a URL parameter
-#         print(f'checking smart_meter_id.. => {meter_id}')
-#         return CollectGasReading.objects.filter(smart_box_id=smart_box_id).order_by('-last_push')
-
 
 
 # Cylinder Detail View
@@ -179,7 +167,6 @@ def GasReadingHistoryssAPIView(self, smart_box_id):
         return Response({"message": "success", "data": gas_reading_serializer.data}, status=status.HTTP_200_OK)
     except SmartBox.DoesNotExist:
         return Response({"message": "SmartBox not found!"}, status=status.HTTP_400_BAD_REQUEST)
-
 
 
 
