@@ -27,6 +27,18 @@ class GasMeterStatusSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class UserGasMeterStatusSerializer(serializers.ModelSerializer):
+    full_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = GasMeterStatus
+        fields = ("id", "user_id", "smart_box", "cylinder_serial_number", "quantity_supplied", "quantity_used",
+                  "battery_remaining", "quantity_gas_left", "last_push", "full_name")
+
+    def get_full_name(self, obj):
+        return f"{obj.first_name} {obj.last_name}"
+
+
 class UserGasReadingSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
 

@@ -13,7 +13,7 @@ from asset.models import ResidentialAssignCylinder, Cylinder, SmartBox
 from .models import SmartBoxReadings, Range, ActivatedSmartBoxReading, CollectGasReading, GasMeterStatus
 from .serializers import SmartBoxReadingsSerializer, RangeSerializer, AssignedSmartBoxReadingsSerializer, \
  ActivatedSmartboxReadingSerializer, CollectGasReadingsSerializer, ResidentialCustomersGasReadingsSerializer, \
- UserGasReadingSerializer, GasMeterStatusSerializer
+ UserGasReadingSerializer, GasMeterStatusSerializer, UserGasMeterStatusSerializer
 
 from decimal import Decimal
 from datetime import datetime
@@ -64,6 +64,18 @@ class CollectGasReadingView(generics.CreateAPIView):
 
                 response_data = {
                 'user_id': user.id,
+                'full_name': [user.first_name, user.last_name],
+                #'last_name': user.last_name,
+                'smart_box': which_smart_box,
+                'battery_remaining': battery_remaining,
+                'cylinder_serial_number': cylinder.cylinder_serial_number,
+                'quantity_supplied': qty_supplied,
+                'quantity_used':qty_used,
+                'quantity_gas_left': new_cylinder_gas_quantity,
+                'last_push': serializer.instance.last_push.strftime('%Y-%m-%d %H:%M:%S')
+                }
+                payload = {
+                'user_id': user.id,
                 'first_name': user.first_name,
                 'last_name': user.last_name,
                 'smart_box': which_smart_box,
@@ -76,7 +88,7 @@ class CollectGasReadingView(generics.CreateAPIView):
                 }
 
                 # Save gas status 
-                GasMeterStatus.objects.create(**response_data)
+                GasMeterStatus.objects.create(**payload)
                 return Response({"message": "success", "data": response_data}, status=status.HTTP_200_OK)
             return Response({"message": "Cylinder not found!"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -110,8 +122,10 @@ class GasMeterStatusView(APIView):
 class ResidentialUserMeterReadingsListView(generics.ListAPIView):
     """ API For Residential Customers Gas Readings """
     queryset = GasMeterStatus.objects.all()
-    serializer_class = GasMeterStatusSerializer
+    serializer_class = UserGasMeterStatusSerializer
     pagination_class = MeterReadingsPagination
+
+
 
 
 class MeterReadingsListView(generics.ListAPIView):
