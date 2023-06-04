@@ -37,6 +37,7 @@ urlpatterns = [
     path('api/v2/wallet/', include('wallet.urls')),
     path('api/v2/delivery/', include('delivery.urls')),
     path('api/v2/notifications/', include('notifications.urls')),
+    path('api/v2/waitlist/', include('waitlist.urls')),
 
 
     # Default Auth

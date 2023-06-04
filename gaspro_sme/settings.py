@@ -50,7 +50,8 @@ INSTALLED_APPS = [
     'wallet',
     'delivery',
     'notifications',
-    
+    'waitlist',
+
     # Dependencies
     'rest_framework',
     'corsheaders',

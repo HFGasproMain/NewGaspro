@@ -81,3 +81,4 @@ class SMEUser2(User):
 
     class Meta:
         ordering = ('-date_created',)
+

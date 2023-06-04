@@ -8,23 +8,28 @@ from rest_framework.permissions import AllowAny
 
 from .models import Notifications
 from accounts.models import User
+from asset.models import SmartBox, Cylinder
 from meter_readings.models import GasMeterStatus
 from orders.models import RefillOrder
 
 from .serializers import NotificationsSerializer
 from orders.utils import generate_transaction_id
+from .pagination import MeterReadingsPagination
 
 # Create your views here.
 
 class SendNotifications(APIView):
 	""" API to Send User Gas Quantiy Notifications """
+	pagination_class = MeterReadingsPagination
 	def get(self, request):
 		meter_readings = GasMeterStatus.objects.all()
 		notification_messages = []
-
 		print(f'meter readings => {meter_readings}')
 
-		for gl in meter_readings:
+		paginator = self.pagination_class()
+		paginated_meter_readings = paginator.paginate_queryset(meter_readings, request)
+
+		for gl in paginated_meter_readings:
 			quantity_remaining = gl.quantity_gas_left
 			owner = gl.user_id
 			user = get_object_or_404(User, id=int(owner))
@@ -32,7 +37,7 @@ class SendNotifications(APIView):
 			# Retrieve the SmartBox instance
 			smart_box = SmartBox.objects.get(box_id=gl.smart_box)
 			# Retrieve the Cylinder instance
-			cylinder = Cylinder.objects.get(serial_number=gl.cylinder_serial_number)
+			cylinder = Cylinder.objects.get(cylinder_serial_number=gl.cylinder_serial_number)
 
 			if user:
 				time = gl.last_push
@@ -135,7 +140,8 @@ class SendNotifications(APIView):
 				print('User does not exist for the meter reading')
 				return Response({'message':'User for this meter not found!'}, status=status.HTTP_400_BAD_REQUEST)
 		serializer = NotificationsSerializer(notification_messages, many=True)
-		return Response(serializer.data, status=status.HTTP_200_OK)
+		#return Response(serializer.data, status=status.HTTP_200_OK)
+		return paginator.get_paginated_response(serializer.data)
 
 
 # class NotificationsListView(generics.ListAPIView):

@@ -53,7 +53,22 @@ class OnboardedOrderListView(generics.ListAPIView):
 
 
 class RefillOrderList(APIView):
-    def get(self, request):
-        refill_orders = RefillOrder.objects.all()
-        serializer = RefillOrderSerializer(refill_orders, many=True)
-        return Response(serializer.data)
+	""" API to See Bottle Swap Orders """
+	pagination_class = LargeResultsSetPagination
+	def get(self, request):
+		refill_orders = RefillOrder.objects.all()
+
+		# Create an instance of the pagination class
+		paginator = self.pagination_class()
+
+		# Paginate the queryset
+		paginated_refill_orders = paginator.paginate_queryset(refill_orders, request)
+
+		# Serialize the paginated results
+		serializer = RefillOrderSerializer(paginated_refill_orders, many=True)
+
+		# Return the paginated response
+		return paginator.get_paginated_response(serializer.data)
+
+
+		
