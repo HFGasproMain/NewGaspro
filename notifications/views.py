@@ -29,6 +29,10 @@ class SendNotifications(APIView):
 			owner = gl.user_id
 			user = get_object_or_404(User, id=int(owner))
 			print(f'user id = {user.id}')
+			# Retrieve the SmartBox instance
+			smart_box = SmartBox.objects.get(box_id=gl.smart_box)
+			# Retrieve the Cylinder instance
+			cylinder = Cylinder.objects.get(serial_number=gl.cylinder_serial_number)
 
 			if user:
 				time = gl.last_push
@@ -98,8 +102,8 @@ class SendNotifications(APIView):
 					print(f'transaction_id => {transaction_id}')
 					# Create a RefillOrder instance
 					refill_order = RefillOrder.objects.create(user=user,
-                                              smart_box=gl.smart_box,
-                                              cylinder=gl.cylinder_serial_number,
+                                              smart_box=smart_box,
+                                              cylinder=cylinder,
                                               quantity_remaining=quantity_remaining,
                                               status='pending',
                                               transaction_id=transaction_id
