@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import OnboardingOrder
+from .models import OnboardingOrder, RefillOrder
 from billing.models import OrderOnboardBilling
 from billing.serializers import OnboardOrderSerializer
 from accounts.models import User
@@ -45,3 +45,9 @@ class OnboardedOrderListSerializer(serializers.ModelSerializer):
 		model = OnboardingOrder
 		fields = '__all__'
 		
+
+
+class RefillOrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RefillOrder
+        fields = '__all__'

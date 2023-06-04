@@ -1,6 +1,7 @@
 from django.db import models
 from accounts.models import User
 from django.utils import timezone
+from decimal import Decimal
 
 # Create your models here.
 
@@ -48,6 +49,12 @@ class Cylinder(models.Model):
     # actors: customer, DO, RO, HQ--> Logistic officer, plant, maintenance hub, storage
     #RO audit DO. LO audit RO
     
+    # cy_tare_weight = initial_cy_weight, cy_total_weight = cy_tare_weight + capacity/gas content, 
+    # qty_gas_left = cy_total_weight - cy_tare_weight
+    # deduct remnant from old bottle from content/capacity of new bottle => qty delivered & qty billable.
+
+
+
     def __str__(self):
         return '{},{}'.format(self.cylinder_serial_number, self.cylinder_status)
 
@@ -72,7 +79,7 @@ class Cylinder(models.Model):
                 print('Cylinder DoesNotExist!')
                 pass
             else:
-                if self.cylinder_gas_content < existing_instance.cylinder_gas_content - 0.3:
+                if self.cylinder_gas_content < existing_instance.cylinder_gas_content - Decimal(0.3):
                     self.gas_content_type = 'remnant'
                 else:
                     self.gas_content_type = 'contentF'
@@ -82,9 +89,6 @@ class Cylinder(models.Model):
         ordering = ['-date_added']
 
 
-# cy_tare_weight = initial_cy_weight, cy_total_weight = cy_tare_weight + capacity/gas content, 
-# qty_gas_left = cy_total_weight - cy_tare_weight
-# deduct remnant from old bottle from content/capacity of new bottle => qty delivered & qty billable.
 
 # Smart Scale     
 class SmartScale(models.Model):
@@ -131,7 +135,7 @@ class SMEAssignCylinder(models.Model):
     	ordering = ('-assigned_date',)
 
 
-class RetailAssignCylinder(models.Model):
+class ResidentialAssignCylinder(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="retail_assigned_cylinder", blank=True)
     cylinder = models.ForeignKey(Cylinder, on_delete=models.CASCADE, null=True)
     smart_box = models.ForeignKey(SmartBox, on_delete=models.CASCADE, null=True, blank=True)

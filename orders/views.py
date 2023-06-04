@@ -1,14 +1,16 @@
 from django.shortcuts import render
-from .models import OnboardingOrder
+from .models import OnboardingOrder, RefillOrder
 from accounts.models import User
 from billing.models import OrderOnboardBilling
-from .serializers import OnboardingOrderSerializer, OnboardedOrderListSerializer
+from .serializers import OnboardingOrderSerializer, OnboardedOrderListSerializer, RefillOrderSerializer
+
 from rest_framework import generics, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from .pagination import LargeResultsSetPagination
+
 import time
 
 # Create your views here.
@@ -48,3 +50,10 @@ class OnboardedOrderListView(generics.ListAPIView):
 	serializer_class = OnboardedOrderListSerializer
 	pagination_class = LargeResultsSetPagination
 			
+
+
+class RefillOrderList(APIView):
+    def get(self, request):
+        refill_orders = RefillOrder.objects.all()
+        serializer = RefillOrderSerializer(refill_orders, many=True)
+        return Response(serializer.data)

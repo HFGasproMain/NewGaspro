@@ -7,7 +7,7 @@ from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from accounts.models import User
-from .models import Cylinder, SMEAssignCylinder, SmartBox, SmartScale, RetailAssignCylinder, GasPrice, OtherBillableAssets
+from .models import Cylinder, SMEAssignCylinder, SmartBox, SmartScale, ResidentialAssignCylinder, GasPrice, OtherBillableAssets
 
 
 
@@ -80,7 +80,7 @@ class ResidentialAssignCylinderSerializer(serializers.ModelSerializer):
     print('SmartBox[[]]', smart_box)
 
     class Meta:
-        model = RetailAssignCylinder
+        model = ResidentialAssignCylinder
         fields = ['user', 'cylinder', 'smart_box', 'assigned_date']
 
 

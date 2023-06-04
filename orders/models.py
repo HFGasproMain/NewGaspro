@@ -1,5 +1,6 @@
 from django.db import models
 from accounts.models import User
+from asset.models import SmartBox, Cylinder
 
 # Create your models here.
 
@@ -45,14 +46,44 @@ class OnboardingOrder(models.Model):
 		"""Customer Onboarding Order"""
 		return self.cy_type
 
-	# def get_cost(self):
-	# 	return Decimal(self.price) * Decimal(self.quantity)
-
-	# def get_cost(self):
-	# 	if cylinder_type = 'new_cylinder':
-	# 		return Decimal(self.)
 
 
 
-class BottleSwapOrder(models.Model):
-	pass
+status_choices = (
+		('pending', 'pending'),
+		('approved', 'approved'),
+		('ongoing', 'ongoing'),
+		('delivered', 'delivered')
+	)
+class RefillOrder(models.Model):
+	user = models.ForeignKey(User, on_delete=models.CASCADE)
+	smart_box = models.ForeignKey(SmartBox, on_delete=models.CASCADE, related_name='meters')
+	cylinder = models.ForeignKey(Cylinder, on_delete=models.CASCADE, related_name='cylinders')
+	quantity_remaining = models.DecimalField(decimal_places=2, max_digits=5)
+	status = models.CharField(max_length=20, choices=status_choices, default='pending', blank=True)
+	transaction_id = models.CharField(max_length=200, blank=True)
+	date_created = models.DateTimeField(auto_now_add=True)
+
+	def approve_order(self):
+		if self.status == 'pending':
+			self.status = 'approved'
+			self.save()
+
+	def start_delivery(self):
+		if self.status == 'approved':
+			self.status = 'ongoing'
+			self.save()
+
+	def complete_delivery(self):
+		if self.status == 'ongoing':
+			self.status = 'delivered'
+			self.save()
+
+
+	def __str__(self):
+		return self.status
+
+	class Meta:
+		ordering = ['-date_created']
+
+

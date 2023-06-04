@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from accounts.models import User
-from .models import Cylinder, SmartScale, SmartBox, SMEAssignCylinder, RetailAssignCylinder, OtherBillableAssets, GasPrice
+from .models import Cylinder, SmartScale, SmartBox, SMEAssignCylinder, ResidentialAssignCylinder, OtherBillableAssets, GasPrice
 from meter_readings.models import SmartBoxMonitor, SmartScaleMonitor, SmartBoxReadings
 
 from .serializers import CylinderSerializer, CylinderListSerializer, SMEAssignCylinderSerializer, \
@@ -67,8 +67,7 @@ def cylinder_detail_view(self, cylinder):
         cylinder_serializer = CylinderDetailSerializer(cylinder)
         return Response({"message": "success", "data": cylinder_serializer.data}, status=status.HTTP_200_OK)
     except Cylinder.DoesNotExist:
-        return Response({"message": "Cylinder not found!"},
-            status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "Cylinder not found!"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CylinderDeleteView(generics.RetrieveDestroyAPIView):
@@ -150,7 +149,7 @@ class ResidentialAssignCylinderCreateView(generics.CreateAPIView):
 
 class ResidentialAssignedCylinderListView(generics.ListAPIView):
 	""" All Residential Users Assigned Assets (Cylinders & SmartBoxes) """
-	queryset = RetailAssignCylinder.objects.all()
+	queryset = ResidentialAssignCylinder.objects.all()
 	serializer_class = ResidentialAssignCylinderSerializer
 	permission_classes = (AllowAny,)
 
@@ -256,7 +255,7 @@ class SmartBoxCreateView(generics.CreateAPIView):
 
         if not SmartBox.objects.filter(box_id=box_id).exists():
             payload = {
-                "smart_box": box_id,
+                "smart_box_id": box_id,
                 "quantity_supplied": quantity_supplied,
                 "quantity_used": 0.0,
                 "quantity_remaining": quantity_supplied,

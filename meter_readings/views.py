@@ -1,15 +1,25 @@
 import datetime
 import uuid
 import requests
+
 from rest_framework import generics, status
 from rest_framework.decorators import api_view
-from asset.models import RetailAssignCylinder
-from .models import SmartBoxReadings, Range, ActivatedSmartBoxReading, CollectGasReading
-from .serializers import SmartBoxReadingsSerializer, RangeSerializer, AssignedSmartBoxReadingsSerializer, \
- ActivatedSmartboxReadingSerializer, CollectGasReadingsSerializer
+from rest_framework.permissions import AllowAny
+from rest_framework.views import APIView
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
+from asset.models import ResidentialAssignCylinder, Cylinder, SmartBox
+from .models import SmartBoxReadings, Range, ActivatedSmartBoxReading, CollectGasReading, GasMeterStatus
+from .serializers import SmartBoxReadingsSerializer, RangeSerializer, AssignedSmartBoxReadingsSerializer, \
+ ActivatedSmartboxReadingSerializer, CollectGasReadingsSerializer, ResidentialCustomersGasReadingsSerializer, \
+ UserGasReadingSerializer, GasMeterStatusSerializer
 
+from decimal import Decimal
+from datetime import datetime
+from django.utils import timezone
+
+from .pagination import MeterReadingsPagination
 
 # All Views Here
 class CollectGasReadingView(generics.CreateAPIView):
@@ -21,34 +31,176 @@ class CollectGasReadingView(generics.CreateAPIView):
         serializer = SmartBoxReadingsSerializer(data=request.data)
         if serializer.is_valid():
             which_smart_box = request.data.get('smart_box_id')
-            print(f'smart_box_id_received => {which_smart_box}')
+            print(f'smart_box_id_received_from hardware => {which_smart_box}')
             qty_used = request.data.get('quantity_used')
             battery_remaining = request.data.get('battery_remaining')
             longitude = request.data.get('longitude')
             latitude = request.data.get('latitude')
 
             # Perform all calculations
-            assigned_meter = RetailAssignCylinder.objects.filter(smart_box=which_smart_box)
-
-            if RetailAssignCylinder.objects.filter(smart_box=which_smart_box).exists():
+            if ResidentialAssignCylinder.objects.filter(smart_box=which_smart_box).exists():
                 print('Loading ...! SmartBox Exists!! ... Gas Reading Activated!!!')
-                get_smartbox = RetailAssignCylinder.objects.filter(smart_box=which_smart_box).first()
-                print(f'smart_box_id_comparing... => {get_smartbox}')
-                get_cylinder = RetailAssignCylinder.objects.filter(smart_box=which_smart_box).first()
-                print(f'cylinder_comparing... => {get_cylinder}')
-                get_user = RetailAssignCylinder.objects.filter()
-                cylinder_attached_to_smartbox = ActivatedReading.objects.create(
-                    smart_box_id = None
-                )
-                return Response({"message": "success", "data": serializer.data}, status=status.HTTP_200_OK)
-                #RetailAssignCylinder.DoesNotExist:
+                assigned_meter = ResidentialAssignCylinder.objects.filter(smart_box=which_smart_box).first()
+    
+                # Get the associated cylinder data
+                user = assigned_meter.user
+                print(f'user_id => {user}')
+                cylinder = assigned_meter.cylinder
+                qty_used = Decimal(qty_used)
+                print(f'{qty_used},', type(qty_used))
+                qty_supplied = assigned_meter.cylinder.cylinder_gas_content
+                print(f'{qty_supplied},', type(qty_supplied))
+
+                # Calculate the current cylinder_gas_quantity 
+                qty_gas_left = qty_supplied - qty_used
+
+                # Update the cylinder_gas_quantity in the Cylinder model
+                cylinder.cylinder_gas_content = qty_gas_left
+                cylinder.save()
+
+                # keep for response usage
+                new_cylinder_gas_quantity = cylinder.cylinder_gas_content
+                serializer.save()
+
+                response_data = {
+                'user_id': user.id,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'smart_box': which_smart_box,
+                'battery_remaining': battery_remaining,
+                'cylinder_serial_number': cylinder.cylinder_serial_number,
+                'quantity_supplied': qty_supplied,
+                'quantity_used':qty_used,
+                'quantity_gas_left': new_cylinder_gas_quantity,
+                'last_push': serializer.instance.last_push.strftime('%Y-%m-%d %H:%M:%S')
+                }
+
+                # Save gas status 
+                GasMeterStatus.objects.create(**response_data)
+                return Response({"message": "success", "data": response_data}, status=status.HTTP_200_OK)
             return Response({"message": "Cylinder not found!"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class GasMeterStatusView(APIView):
+    def get(self, request):
+        # Retrieve all CollectGasReading instances
+        gas_readings = CollectGasReading.objects.all()
+
+        # Prepare response data
+        response_data = []
+        for gas_reading in gas_readings:
+            smart_meter_id = gas_reading.smart_box_id
+            print(f'assigned_meters => {smart_meter_id},')
+            
+            owner = ResidentialAssignCylinder.objects.filter(smart_box=smart_meter_id).last()
+            gas_quantity_remaining = gas_reading.quantity_remaining
+
+            # Append data to the response list
+            response_data.append({
+                'smart_meter_id': smart_meter_id,
+                'first_name': owner.user.first_name,
+                'last_name': owner.user.last_name,
+                'gas_quantity_remaining': gas_quantity_remaining,
+            })
+
+        return Response(response_data)
+
+
+class ResidentialUserMeterReadingsListView(generics.ListAPIView):
+    """ API For Residential Customers Gas Readings """
+    queryset = GasMeterStatus.objects.all()
+    serializer_class = GasMeterStatusSerializer
+    pagination_class = MeterReadingsPagination
+
+
+class MeterReadingsListView(generics.ListAPIView):
+    serializer_class = CollectGasReadingsSerializer
+
+    def get_queryset(self):
+        # Retrieve the queryset of MeterReading objects
+        queryset = CollectGasReading.objects.all()
+
+        # Select only the desired fields (meter_id, quantity_remaining, and user)
+        queryset = queryset.values('smart_box_id', 'quantity_remaining', 'user')
+        return queryset
+
+
+class UserGasReadingListView(generics.ListAPIView):
+    serializer_class = UserGasReadingSerializer
+
+    def get_queryset(self):
+        return CollectGasReading.objects.all()
+
 
 '''
 1. unassigned cylinder a
 2. onboard/assign cylinder & meter a
 3. get reading from that assigned meter and get the 
 '''
+
+# class GasReadingHistorysAPIView(generics.RetrieveAPIView):
+#     serializer_class = CollectGasReadingsSerializer
+
+   
+#     meter_id = self.kwargs['smart_box_id']
+#     print(f'checking meter_id.. => {meter_id}')
+#         if not CollectGasReading.objects.filter(smart_meter_id=meter_id).exists():
+#             return Response({"message": "meter_id not found!"}, status=status.HTTP_400_BAD_REQUEST)
+#         smart_box_id = self.kwargs['smart_box_id']  # Assuming the smart_box_id is passed as a URL parameter
+#         print(f'checking smart_meter_id.. => {meter_id}')
+#         return CollectGasReading.objects.filter(smart_box_id=smart_box_id).order_by('-last_push')
+
+
+
+# Cylinder Detail View
+@api_view(['GET'])
+@permission_classes((AllowAny,))
+def GasReadingHistoryssAPIView(self, smart_box_id):
+    """ API for Meter Reading History by Meter_id """
+    try:
+        smart_meter = SmartBox.objects.get(box_id=smart_box_id) 
+        print(f'checking meter_id.. => {smart_meter}')
+        gas_reading_serializer = CollectGasReadingsSerializer(smart_meter)
+        return Response({"message": "success", "data": gas_reading_serializer.data}, status=status.HTTP_200_OK)
+    except SmartBox.DoesNotExist:
+        return Response({"message": "SmartBox not found!"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+class GasReadingHistoryAPIView(generics.ListAPIView):
+    serializer_class = ResidentialCustomersGasReadingsSerializer
+
+    def get_queryset(self):
+        meter_id = self.kwargs['smart_box_id']
+        print(f'checking meter_id.. => {meter_id}')
+
+        
+        try:
+            smart_meter = self.kwargs['smart_box_id']
+            #smart_meter = SmartBox.objects.get(box_id=meter_id) 
+            print(f'checking meter_id.. => {smart_meter}')
+            return CollectGasReading.objects.filter(smart_box_id=smart_meter)
+        except SmartBox.DoesNotExist:
+            return CollectGasReading.objects.none()
+
+    def list(self, request, *args, **kwargs):
+        meter_id = self.kwargs['smart_box_id']
+        
+        try:
+            smart_meter = SmartBox.objects.get(box_id=meter_id)
+            queryset = self.filter_queryset(self.get_queryset())
+            
+            if not queryset.exists():
+                return Response({'detail': 'No gas reading history found.'}, status=status.HTTP_404_NOT_FOUND)
+
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data)
+        except SmartBox.DoesNotExist:
+            return Response({'detail': 'Invalid meter ID.'}, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 
 class CreateActivatedSmartboxReadingView(generics.CreateAPIView):
@@ -67,7 +219,7 @@ class CreateActivatedSmartboxReadingView(generics.CreateAPIView):
 
             # Perform calculations
             
-            if RetailAssignCylinder.objects.filter(smart_box=which_smartbox).exists():
+            if ResidentialAssignCylinder.objects.filter(smart_box=which_smartbox).exists():
                 print('Loading ...! SmartBox Exists!! ... Gas Reading Activated!!!')
 
                 cylinder_attached_to_smartbox = ActivatedReading.objects.create(
@@ -82,6 +234,7 @@ class SmartBoxDefaultReadingsView(generics.ListAPIView):
     queryset = SmartBoxReadings.objects.all()
     serializer_class = SmartBoxReadingsSerializer
 
+
 # Activated Smartbox Readings
 class ActivatedSmartBoxReadingsListView(generics.ListAPIView):
     """ API For Activated SmartBox Readings """
@@ -91,7 +244,7 @@ class ActivatedSmartBoxReadingsListView(generics.ListAPIView):
 
 class AssignedSmartBoxReadingsView(generics.ListAPIView):
     """ API For Onboarded & Assigned SmartBox Readings """ 
-    queryset = RetailAssignCylinder.objects.all()
+    queryset = ResidentialAssignCylinder.objects.all()
     serializer_class = AssignedSmartBoxReadingsSerializer
 
 
