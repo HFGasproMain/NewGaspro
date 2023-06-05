@@ -12,6 +12,7 @@ from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from asset.models import ResidentialAssignCylinder, Cylinder, SmartBox
 from wallet.models import Wallet
+from orders.models import OnboardingOrder
 from .models import SmartBoxReadings, Range, ActivatedSmartBoxReading, CollectGasReading, GasMeterStatus
 from .serializers import SmartBoxReadingsSerializer, RangeSerializer, AssignedSmartBoxReadingsSerializer, \
  ActivatedSmartboxReadingSerializer, CollectGasReadingsSerializer, ResidentialCustomersGasReadingsSerializer, \
@@ -155,6 +156,35 @@ class ResidentialUserMeterReadingSearchAPIView(generics.ListAPIView):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
+class UserDetailView(APIView):
+    """ API For Residential User Detail """
+    def get(self, request, user_id):
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=404)
+
+        # Assuming you have a UserProfile model that extends the User model
+        phone_number = user.phone_number
+
+        # Get the SmartBox object for the user
+        smart_box = ResidentialAssignCylinder.objects.filter(user=user).first()
+        smart_box_id = smart_box.smart_box_id if smart_box else None
+
+        # Get the onboarding order for the user
+        onboarding_order = OnboardingOrder.objects.filter(customer=user).first()
+        date_of_onboarding = onboarding_order.date_created if onboarding_order else None
+
+        data = {
+            'full_name': user.get_full_name(),
+            'address': user.get_full_address(),
+            'phone_number': phone_number,
+            'smart_box_id': smart_box_id,
+            'date_of_onboarding': date_of_onboarding
+        }
+
+        return Response(data)
 
 
 class ResidentialUserMeterReadingsHistoryAPIView(generics.RetrieveAPIView):
