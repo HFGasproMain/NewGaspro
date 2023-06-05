@@ -61,6 +61,13 @@ class User(AbstractBaseUser, PermissionsMixin):
             self.referral_code = get_random_string(length=6, allowed_chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')
         return super().save(*args, **kwargs)
 
+    def get_full_name(self):
+        """Return the user's full name."""
+        return f"{self.first_name} {self.last_name}"
+
+
+
+
 
 class SMEUser2(User):
     #which_user = models.CharField(max_length=100, blank=True, default='sme_new_user', null=True)

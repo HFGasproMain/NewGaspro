@@ -22,9 +22,13 @@ class CollectGasReadingsSerializer(serializers.ModelSerializer):
 
 
 class GasMeterStatusSerializer(serializers.ModelSerializer):
+    quantity_gas_left = serializers.DecimalField(decimal_places=2, max_digits=6)
+
     class Meta:
         model = GasMeterStatus
         fields = "__all__"
+        #fields = ('user_id', 'first_name', 'last_name', 'smart_box', 'cylinder_serial_number', 'quantity_supplied', \
+            #'quantity_used', 'battery_remaining', 'quantity_gas_left', 'last_push')
 
 
 class UserGasMeterStatusSerializer(serializers.ModelSerializer):

@@ -51,6 +51,8 @@ class OnboardingOrder(models.Model):
 
 status_choices = (
 		('pending', 'pending'),
+		('resheduled', 'rescheduled'),
+		('assigned', 'assigned'),
 		('approved', 'approved'),
 		('ongoing', 'ongoing'),
 		('delivered', 'delivered')

@@ -46,8 +46,6 @@ class GasMeterStatus(models.Model):
     last_name = models.CharField(max_length=50, blank=True)
     smart_box = models.CharField(max_length=30, blank=True)
     cylinder_serial_number = models.CharField(max_length=30, blank=True)
-    #smart_box = models.ForeignKey(SmartBox, on_delete=models.CASCADE)
-    #cylinder = models.ForeignKey(Cylinder, on_delete=models.CASCADE)
     quantity_supplied = models.DecimalField(decimal_places=2, max_digits=5, null=True)
     quantity_used = models.DecimalField(decimal_places=2, max_digits=5, null=True)
     battery_remaining = models.CharField(max_length=10,null=True)

@@ -9,7 +9,9 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
+from django.contrib.auth import get_user_model
 from asset.models import ResidentialAssignCylinder, Cylinder, SmartBox
+from wallet.models import Wallet
 from .models import SmartBoxReadings, Range, ActivatedSmartBoxReading, CollectGasReading, GasMeterStatus
 from .serializers import SmartBoxReadingsSerializer, RangeSerializer, AssignedSmartBoxReadingsSerializer, \
  ActivatedSmartboxReadingSerializer, CollectGasReadingsSerializer, ResidentialCustomersGasReadingsSerializer, \
@@ -18,8 +20,11 @@ from .serializers import SmartBoxReadingsSerializer, RangeSerializer, AssignedSm
 from decimal import Decimal
 from datetime import datetime
 from django.utils import timezone
+from django.db.models import Sum, Q
+from django.http import JsonResponse
 
 from .pagination import MeterReadingsPagination
+User = get_user_model()
 
 # All Views Here
 class CollectGasReadingView(generics.CreateAPIView):
@@ -62,19 +67,19 @@ class CollectGasReadingView(generics.CreateAPIView):
                 new_cylinder_gas_quantity = cylinder.cylinder_gas_content
                 serializer.save()
 
+                # response_data = {
+                # 'user_id': user.id,
+                # 'full_name': [user.first_name, user.last_name],
+                # #'last_name': user.last_name,
+                # 'smart_box': which_smart_box,
+                # 'battery_remaining': battery_remaining,
+                # 'cylinder_serial_number': cylinder.cylinder_serial_number,
+                # 'quantity_supplied': qty_supplied,
+                # 'quantity_used':qty_used,
+                # 'quantity_gas_left': new_cylinder_gas_quantity,
+                # 'last_push': serializer.instance.last_push.strftime('%Y-%m-%d %H:%M:%S')
+                # }
                 response_data = {
-                'user_id': user.id,
-                'full_name': [user.first_name, user.last_name],
-                #'last_name': user.last_name,
-                'smart_box': which_smart_box,
-                'battery_remaining': battery_remaining,
-                'cylinder_serial_number': cylinder.cylinder_serial_number,
-                'quantity_supplied': qty_supplied,
-                'quantity_used':qty_used,
-                'quantity_gas_left': new_cylinder_gas_quantity,
-                'last_push': serializer.instance.last_push.strftime('%Y-%m-%d %H:%M:%S')
-                }
-                payload = {
                 'user_id': user.id,
                 'first_name': user.first_name,
                 'last_name': user.last_name,
@@ -88,7 +93,7 @@ class CollectGasReadingView(generics.CreateAPIView):
                 }
 
                 # Save gas status 
-                GasMeterStatus.objects.create(**payload)
+                GasMeterStatus.objects.create(**response_data)
                 return Response({"message": "success", "data": response_data}, status=status.HTTP_200_OK)
             return Response({"message": "Cylinder not found!"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -127,24 +132,70 @@ class ResidentialUserMeterReadingsListView(generics.ListAPIView):
 
 
 
-
-class MeterReadingsListView(generics.ListAPIView):
-    serializer_class = CollectGasReadingsSerializer
+class ResidentialUserMeterReadingSearchAPIView(generics.ListAPIView):
+    """API to Search Gas Reading Details by Customer Name or Phone number"""
+    serializer_class = GasMeterStatusSerializer
 
     def get_queryset(self):
-        # Retrieve the queryset of MeterReading objects
-        queryset = CollectGasReading.objects.all()
+        phone_number = self.request.query_params.get('phone_number')
+        customer_name = self.request.query_params.get('customer_name')
+        queryset = GasMeterStatus.objects.all()
 
-        # Select only the desired fields (meter_id, quantity_remaining, and user)
-        queryset = queryset.values('smart_box_id', 'quantity_remaining', 'user')
+        if phone_number:
+            # Filter gas readings by phone number
+            queryset = queryset.filter(user_id__in=User.objects.filter(phone_number=phone_number).values('id'))
+
+        if customer_name:
+            # Filter gas readings by customer name
+            queryset = queryset.filter(user_id__in=User.objects.filter(
+                Q(first_name__icontains=customer_name) | Q(last_name__icontains=customer_name)
+            ).values('id'))
+
         return queryset
 
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        if not queryset.exists():
+            return Response({"message": "No gas meter readings found for this user!"}, status=status.HTTP_404_NOT_FOUND)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-class UserGasReadingListView(generics.ListAPIView):
-    serializer_class = UserGasReadingSerializer
 
-    def get_queryset(self):
-        return CollectGasReading.objects.all()
+
+class ResidentialUserMeterReadingsHistoryAPIView(generics.RetrieveAPIView):
+    """ API For Residential User Details (Gas Usage History & Invoice History)"""
+    serializer_class = GasMeterStatusSerializer
+
+    def get_object(self):
+        meter_id = self.kwargs['smart_box_id']  
+        #name = self.kwargs['name']
+        
+        # Check if the meter_id exists
+        if not SmartBox.objects.filter(box_id=meter_id).exists():
+            return None
+        
+        #queryset = CollectGasReading.objects.filter(residential_assign_meter__smart_meter_id=meter_id)
+        queryset = GasMeterStatus.objects.filter(smart_box=meter_id)
+        total_gas_used = queryset.aggregate(total_gas_used=Sum('quantity_used'))['total_gas_used']
+        total_quantity_purchased = queryset.aggregate(total_quantity_purchased=Sum('quantity_supplied'))['total_quantity_purchased']
+
+        # Calculate the total transactional amount based on other bills (e.g., onboarding bill, cylinder refill, etc.)
+        # Replace 'other_bills' with the actual model representing other bills
+        #total_transactional_amount = other_bills.objects.filter(user__smart_box=meter_id).aggregate(total_amount=Sum('amount'))['total_amount']
+
+        # if name:
+        #     queryset = queryset.filter(residential_assign_meter__user__first_name=name) | queryset.filter(residential_assign_meter__user__last_name=name)
+        
+        data = {
+            'total_gas_used': total_gas_used,
+            'total_quantity_purchased': total_quantity_purchased,
+            #'total_transactional_amount': total_transactional_amount,
+            'meter_readings': queryset.order_by('-last_push').first()
+        }
+
+        return data
+
+
 
 
 '''
@@ -202,6 +253,82 @@ class GasReadingHistoryAPIView(generics.ListAPIView):
             return Response({'detail': 'Invalid meter ID.'}, status=status.HTTP_400_BAD_REQUEST)
 
 
+
+class UserGasConsumptionAndCostAPIView(APIView):
+    """ API to Get User Gas Consumption & Cost Details """
+    def get(self, request, user_id):
+        
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=404)
+
+        # Check if GasMeterStatus records exist for the user
+        gas_meter_status_exists = GasMeterStatus.objects.filter(user_id=user_id).exists()
+
+        total_gas_quantity_purchased = 0
+        total_transactional_amount = 0
+        total_quantity_used = 0
+        total_gas_amount = 0
+        total_gas_cost = 0
+        total_gas_consumption = 0
+        remaining_gas_quantity = 0
+        virtual_wallet_balance = 'null'
+        virtual_wallet_debt = 'null'
+        smart_box_id = 'null'
+
+
+        if gas_meter_status_exists:
+            total_gas_consumption = GasMeterStatus.objects.filter(user_id=user_id).aggregate(total_gas_consumption=
+            Sum('quantity_used'))['total_gas_consumption']
+            #gas_cost = GasMeterStatus.objects.filter(user_id=user_id).aggregate(total_gas_cost=Sum('quantity_used'))['total_gas_cost']
+            # Replace 'OtherBillModel' with the actual model representing other billable costs
+            #other_billable_costs = OtherBillModel.objects.filter(user_id=user_id).aggregate(total_cost=Sum('amount'))['total_cost']
+            smart_box_id = GasMeterStatus.objects.filter(user_id=user.id).values_list('smart_box', flat=True).first()
+
+       
+            # Calculate the remaining gas quantity (quantity_gas_left) for the user
+            remaining_gas_quantity = GasMeterStatus.objects.filter(user_id=user_id).latest('last_push').quantity_gas_left
+        
+
+            # Calculate the total gas quantity purchased by the user
+            total_gas_quantity_purchased = GasMeterStatus.objects.filter(user_id=user_id).aggregate(total_gas_quantity_purchased=
+                Sum('quantity_supplied'))['total_gas_quantity_purchased']
+            total_quantity_used = GasMeterStatus.objects.filter(user_id=user.id).aggregate(total_quantity_used=
+                Sum('quantity_used'))['total_quantity_used']
+
+            # Calculate the total cost of gas for the user (assuming a fixed cost per unit of gas)
+            unit_cost_of_gas = 250 #untrue value
+            other_billable_costs = 1000 # untrue value
+            #total_gas_amount = total_quantity_used * <amount_per_unit_of_gas>
+            total_gas_cost = total_gas_quantity_purchased * unit_cost_of_gas
+
+            total_transactional_amount = total_gas_cost + other_billable_costs
+            total_cost = total_gas_cost
+            
+            # Get the user's virtual wallet details
+            #wallet = Wallet.objects.get(user=user)
+
+            # Get or create the Wallet object for the user
+            wallet, created = Wallet.objects.get_or_create(user=user)
+            virtual_wallet_balance = wallet.balance
+            virtual_wallet_debt = wallet.debt
+
+
+        data = {
+            'full_name': user.get_full_name(),
+            'smart_box_id': smart_box_id,
+            'quantity_remaining':remaining_gas_quantity,
+            #'total_gas_consumption': total_gas_consumption,
+            'total_gas_amount': total_gas_cost,
+            'total_gas_quantity_purchased':total_gas_quantity_purchased,
+            'total_transactional_amount': total_transactional_amount,
+            #'total_quantity_used':total_quantity_used,
+            'virtual_wallet_balance': virtual_wallet_balance,
+            'debt': virtual_wallet_debt
+        }
+        
+        return Response(data)
 
 
 class CreateActivatedSmartboxReadingView(generics.CreateAPIView):

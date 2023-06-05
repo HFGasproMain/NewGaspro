@@ -1,12 +1,12 @@
 from django.urls import path 
-from .views import SmartBoxDefaultReadingsView, AssignedSmartBoxReadingsView, CreateActivatedSmartboxReadingView, \
-	ActivatedSmartBoxReadingsListView, CollectGasReadingView, MeterReadingsListView, GasReadingHistoryAPIView, UserGasReadingListView,\
-	GasMeterStatusView, SmartBoxReadings, ResidentialUserMeterReadingsListView
+from .views import SmartBoxDefaultReadingsView, AssignedSmartBoxReadingsView, CreateActivatedSmartboxReadingView, ActivatedSmartBoxReadingsListView, \
+	CollectGasReadingView, GasReadingHistoryAPIView, GasMeterStatusView, SmartBoxReadings, ResidentialUserMeterReadingsListView, \
+	 ResidentialUserMeterReadingsHistoryAPIView, ResidentialUserMeterReadingSearchAPIView, UserGasConsumptionAndCostAPIView
 
 urlpatterns = [
 	
 	path('smartboxreadings/live-collect/', CollectGasReadingView.as_view(), name='smartbox-readings-collect'),
-	path('smartboxreadings/allreadings/', MeterReadingsListView.as_view(), name='smartbox-readings-list'),
+	#path('smartboxreadings/allreadings/', MeterReadingsListView.as_view(), name='smartbox-readings-list'),
 	#path('smartboxreadings/user-readings/', UserGasReadingListView.as_view(), name='user-smartbox-readings'),
 	#path('smartboxreadings/residential/', GasMeterStatusView.as_view(), name='user-smartbox-readings'),
 	path('smartboxreadings/residential/', ResidentialUserMeterReadingsListView.as_view(), name='residential-meter-readings'),
@@ -16,8 +16,13 @@ urlpatterns = [
 
 	
 	# meter readings history
-	#path('smartboxreadings/history/<str:smart_box_id>/', MeterReadingsListView.as_view(), name='smartbox-readings-list'),
+	path('smartboxreadings/history/<str:smart_box_id>/', ResidentialUserMeterReadingsHistoryAPIView.as_view(), name='smartbox-readings-history'),
 	path('smartboxreadings/detail/<str:smart_box_id>/', GasReadingHistoryAPIView.as_view(), name='smartbox-readings-detail'),
+
+	path('smartboxreadings/user/<int:user_id>/', UserGasConsumptionAndCostAPIView.as_view(), name='user_gas_consumption_and_cost'),
+
+	# gas reading search
+	path('smartboxreadings/search/', ResidentialUserMeterReadingSearchAPIView.as_view(), name='gas-readings-search'),
 
 
 	path('smartboxreadings/create/', CreateActivatedSmartboxReadingView.as_view(), name='smartbox-readings-create'),
