@@ -137,19 +137,14 @@ class ResidentialUserMeterReadingSearchAPIView(generics.ListAPIView):
     serializer_class = GasMeterStatusSerializer
 
     def get_queryset(self):
-        phone_number = self.request.query_params.get('phone_number')
-        customer_name = self.request.query_params.get('customer_name')
+        query = self.request.query_params.get('query')
         queryset = GasMeterStatus.objects.all()
 
-        if phone_number:
-            # Filter gas readings by phone number
-            queryset = queryset.filter(user_id__in=User.objects.filter(phone_number=phone_number).values('id'))
 
-        if customer_name:
+        if query:
             # Filter gas readings by customer name
             queryset = queryset.filter(user_id__in=User.objects.filter(
-                Q(first_name__icontains=customer_name) | Q(last_name__icontains=customer_name)
-            ).values('id'))
+                Q(first_name__icontains=query) | Q(last_name__icontains=query) | Q(phone_number=query)).values('id'))
 
         return queryset
 
