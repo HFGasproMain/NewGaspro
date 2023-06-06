@@ -48,7 +48,6 @@ class OnboardingOrder(models.Model):
 
 
 
-
 status_choices = (
 		('pending', 'pending'),
 		('resheduled', 'rescheduled'),
@@ -57,6 +56,7 @@ status_choices = (
 		('ongoing', 'ongoing'),
 		('delivered', 'delivered')
 	)
+
 class RefillOrder(models.Model):
 	user = models.ForeignKey(User, on_delete=models.CASCADE)
 	smart_box = models.ForeignKey(SmartBox, on_delete=models.CASCADE, related_name='meters')
@@ -64,6 +64,7 @@ class RefillOrder(models.Model):
 	quantity_remaining = models.DecimalField(decimal_places=2, max_digits=5)
 	status = models.CharField(max_length=20, choices=status_choices, default='pending', blank=True)
 	transaction_id = models.CharField(max_length=200, blank=True)
+	#do = models.ForeignKey(DeliveryOfficer, on_delete=models.SET_NULL, null=True, blank=True)
 	date_created = models.DateTimeField(auto_now_add=True)
 
 	def approve_order(self):
