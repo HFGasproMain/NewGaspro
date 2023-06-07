@@ -136,25 +136,33 @@ class ResidentialUserMeterReadingsListView(generics.ListAPIView):
 class ResidentialUserMeterReadingSearchAPIView(generics.ListAPIView):
     """API to Search Gas Reading Details by Customer Name or Phone number"""
     serializer_class = GasMeterStatusSerializer
+    pagination_class = MeterReadingsPagination
 
     def get_queryset(self):
         query = self.request.query_params.get('query')
         queryset = GasMeterStatus.objects.all()
-
+        paginator = self.pagination_class()
 
         if query:
             # Filter gas readings by customer name
             queryset = queryset.filter(user_id__in=User.objects.filter(
                 Q(first_name__icontains=query) | Q(last_name__icontains=query) | Q(phone_number=query)).values('id'))
 
+        paginated_queryset = paginator.paginate_queryset(queryset, self.request)
         return queryset
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
+        #queryset =  GasMeterStatus.objects.all()
+        paginator = self.pagination_class()
+        
         if not queryset.exists():
             return Response({"message": "No gas meter readings found for this user!"}, status=status.HTTP_404_NOT_FOUND)
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        paginated_queryset = paginator.paginate_queryset(queryset, request)
+        serializer = self.get_serializer(paginated_queryset, many=True)
+        #return Response(serializer.data, status=status.HTTP_200_OK)
+        return paginator.get_paginated_response(serializer.data)
 
 
 class UserDetailView(APIView):
