@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Retailers 
+from .models import Retailers, Manager
+from dateutil import parser
 
 
 class RetailersSerializer(serializers.ModelSerializer):
@@ -42,3 +43,30 @@ class RetailersListSerializer(serializers.ModelSerializer):
 		model = Retailers
 		fields = ['business_name', 'business_email', 'business_address', 'business_lga', 
 			'business_state', 'business_phone_number', 'state_code', 'lga_code', 'first_reference', 'second_reference', 'is_online', 'date_added']
+
+
+
+class CreateManagerSerializer(serializers.Serializer):
+	GENDER_CHOICES = (
+        ('M', 'Male'),
+        ('F', 'Female'),
+    )
+	retailer_id = serializers.PrimaryKeyRelatedField(queryset=Retailers.objects.all())
+	first_name = serializers.CharField(max_length=50)
+	last_name = serializers.CharField(max_length=50)
+	mobile_number = serializers.CharField(max_length=11)
+	gender = serializers.ChoiceField(choices=GENDER_CHOICES)
+	dob = serializers.CharField()
+
+	def validate_dob(self, value):
+		try:
+			dob = parser.parse(value).date().strftime('%Y-%m-%d')
+		except (ValueError, AttributeError):
+			raise serializers.ValidationError('Invalid date format. Use YYYY-MM-DD format.')
+		return dob
+
+class ROManagersListSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Manager
+		fields = '__all__'
+

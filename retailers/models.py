@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import RegexValidator
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -10,6 +11,8 @@ from django.contrib.auth.hashers import make_password
 
 #from cylinder.models import Cylinder
 #from delivery.models import Delivery
+
+phone_regex = RegexValidator(regex=r"^[0]\d{10}$", message="must be a valid phone number")
 
 states = [
     ['AB', 'Abia'],
@@ -51,127 +54,6 @@ states = [
 ]
 
 
-sstates = {
-    'AB': 'Abia',
-    'AD': 'Adamawa',
-    'AK': 'Akwa Ibom',
-    'AN': 'Anambra',
-    'BA': 'Bauchi',
-    'BY': 'Bayelsa',
-    'BE': 'Benue',
-    'BO': 'Borno',
-    'CR': 'Cross River',
-    'DE': 'Delta',
-    'EB': 'Ebonyi',
-    'ED': 'Edo',
-    'EK': 'Ekiti',
-    'EN': 'Enugu',
-    'GO': 'Gombe',
-    'IM': 'Imo',
-    'JI': 'Jigawa',
-    'KA': 'Kaduna',
-    'KN': 'Kano',
-    'KT': 'Katsina',
-    'KE': 'Kebbi',
-    'KO': 'Kogi',
-    'KW': 'Kwara',
-    'LG': 'Lagos',
-    'NA': 'Nasarawa',
-    'NI': 'Niger',
-    'OG': 'Ogun',
-    'ON': 'Ondo',
-    'OS': 'Osun',
-    'OY': 'Oyo',
-    'PL': 'Plateau',
-    'RI': 'Rivers',
-    'SO': 'Sokoto',
-    'TA': 'Taraba',
-    'YO': 'Yobe',
-    'ZA': 'Zamfara',
-}
-
-
-
-# states = (
-#     ('AB', 'Abia'),
-#     ('AD', 'Adamawa'),
-#     ('AK', 'Akwa Ibom'),
-#     ('AN', 'Anambra'),
-#     ('BA', 'Bauchi'),
-#     ('BY', 'Bayelsa'),
-#     ('BE', 'Benue'),
-#     ('BO', 'Borno'),
-#     ('CR', 'Cross River'),
-#     ('DE', 'Delta'),
-#     ('EB', 'Ebonyi'),
-#     ('ED', 'Edo'),
-#     ('EK', 'Ekiti'),
-#     ('EN', 'Enugu'),
-#     ('GO', 'Gombe'),
-#     ('IM', 'Imo'),
-#     ('JI', 'Jigawa'),
-#     ('KA', 'Kaduna'),
-#     ('KN', 'Kano'),
-#     ('KT', 'Katsina'),
-#     ('KE', 'Kebbi'),
-#     ('KO', 'Kogi'),
-#     ('KW', 'Kwara'),
-#     ('LA', 'Lagos'),
-#     ('NA', 'Nasarawa'),
-#     ('NI', 'Niger'),
-#     ('OG', 'Ogun'),
-#     ('ON', 'Ondo'),
-#     ('OS', 'Osun'),
-#     ('OY', 'Oyo'),
-#     ('PL', 'Plateau'),
-#     ('RI', 'Rivers'),
-#     ('SO', 'Sokoto'),
-#     ('TA', 'Taraba'),
-#     ('YO', 'Yobe'),
-#     ('ZA', 'Zamfara'),
-# )
-
-
-# states = [
-#     ('Abia', 'Abia'),
-#     ('Adamawa', 'Adamawa'),
-#     ('Akwa Ibom', 'Akwa Ibom'),
-#     ('Anambra', 'Anambra'),
-#     ('Bauchi', 'Bauchi'),
-#     ('Bayelsa', 'Bayelsa'),
-#     ('Benue', 'Benue'),
-#     ('Borno', 'Borno'),
-#     ('Cross River', 'Cross River'),
-#     ('Delta', 'Delta'),
-#     ('Ebonyi', 'Ebonyi'),
-#     ('Edo', 'Edo'),
-#     ('Ekiti', 'Ekiti'),
-#     ('Enugu', 'Enugu'),
-#     ('FCT', 'FCT'),
-#     ('Gombe', 'Gombe'),
-#     ('Imo', 'Imo'),
-#     ('Jigawa', 'Jigawa'),
-#     ('Kaduna', 'Kaduna'),
-#     ('Kano', 'Kano'),
-#     ('Katsina', 'Katsina'),
-#     ('Kebbi', 'Kebbi'),
-#     ('Kogi', 'Kogi'),
-#     ('Kwara', 'Kwara'),
-#     ('Lagos', 'Lagos'),
-#     ('Nasarawa', 'Nasarawa'),
-#     ('Niger', 'Niger'),
-#     ('Ogun', 'Ogun'),
-#     ('Ondo', 'Ondo'),
-#     ('Osun', 'Osun'),
-#     ('Oyo', 'Oyo'),
-#     ('Plateau', 'Plateau'),
-#     ('Rivers', 'Rivers'),
-#     ('Sokoto', 'Sokoto'),
-#     ('Taraba', 'Taraba'),
-#     ('Yobe', 'Yobe'),
-#     ('Zamfara', 'Zamfara'),
-# ]
-
 lagos_lga = [
     ['Agege', 'Agege'],
     ['Ajeromi-Ifelodun', 'Ajeromi-Ifelodun'],
@@ -194,63 +76,6 @@ lagos_lga = [
     ['Somolu', 'Somolu'],
     ['Surulere', 'Surulere'],
 ]
-
-
-# lagos_lga = (
-#         ['Agege', 'Agege'],
-#         ['Ajeromi-Ifelodun', 'Ajeromi-Ifelodun'],
-#         ['Alimosho', 'Alimosho'],
-#         ('Apapa', 'Apapa'),
-#         ('Amuwo-Odofin', 'Amuwo-Odofin'),
-#         ('Badagry', 'Badagry'),
-#         ('Epe','Epe'),
-#         ('Eti-Osa', 'Eti-Osa'),
-#         ('Ibeju-Lekki','Ibeju-Lekki'),
-#         ('Ifako-Ijaiye','Ifako-Ijaiye'),
-#         ('Ikeja','Ikeja'),
-#         ('Ikorodu','Ikorodu'),
-#         ('Kosofe','Kosofe'),
-#         ('Lagos Island','Lagos Island'),
-#         ('Lagos Mainland','Lagos Mainland'),
-#         ('Mushin','Mushin'),
-#         ('Ojo','Ojo'),
-#         ('Oshodi-Isolo','Oshodi-Isolo'),
-#         ('Somolu','Somolu'),
-#         ('Surulere','Surulere'),
-#     )
-
-
-class Manager(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='manager')
-    retailer = models.ForeignKey('Retailers', on_delete=models.CASCADE, related_name='managers')
-    first_name = models.CharField(max_length=60)
-    last_name = models.CharField(max_length=60)
-    gender = models.CharField(max_length=10)
-    dob = models.DateField()
-    date_created = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.user
-
-    def get_full_name(self):
-        """ Return the manager's full name """
-        return f"{self.first_name}, {self.last_name}" 
-
-class Staff(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='staff')
-    retailer = models.ForeignKey('Retailers', on_delete=models.CASCADE, related_name='staffs')
-    first_name = models.CharField(max_length=60)
-    last_name = models.CharField(max_length=60)
-    gender = models.CharField(max_length=10)
-    dob = models.DateField()
-    date_created = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.user
-
-    def get_full_name(self):
-        """ Return the staff's full name """
-        return f"{self.first_name}, {self.last_name}" 
 
 
 # class CustomUserManager(UserManager):
@@ -288,37 +113,92 @@ class Retailers(models.Model):
         ordering = ('-business_lga',)
         verbose_name = 'Retailers'
 
-    # def save(self, *args, **kwargs):
-    #     if self.business_state:
-    #         # Assign the state code based on the unique index of the state in the `states` list
-    #         self.state_code = states.index(self.business_state) + 1
-
-
-    #     if self.business_lga:
-    #         # Assign the LGA code based on the unique index of the LGA in the `lagos_lga` list
-    #         self.lga_code = lagos_lga.index(self.business_lga) + 1
-
-    #     super().save(*args, **kwargs)
 
     def save(self, *args, **kwargs):
         if self.business_state:
             # Assign the state code based on the unique index of the state in the `states` list
             for index, state in enumerate(states):
-                if state[1] == self.business_state:
+                if state[0] == self.business_state:
                     self.state_code = index + 1
-                    break
-            else:
-                self.state_code = None
+                    print(f'state code => {self.state_code}')
+            # else:
+            #     self.state_code = None
 
         if self.business_lga:
             # Assign the LGA code based on the unique index of the LGA in the `lagos_lga` list
             for index, lga in enumerate(lagos_lga):
-                if lga[1] == self.business_lga:
+                if lga[0] == self.business_lga:
                     self.lga_code = index + 1
-            else:
-                self.lga_code = None
+                    print(f'business code => {self.state_code}')
+            # else:
+            #     self.lga_code = None
         
         super().save(*args, **kwargs)
+
+    def get_retailers_code(self):
+        return [self.state_code ,self.business_lga]
+
+
+gender_choices = (
+    ('Male', 'Male'),
+    ('Female', 'Female')
+    )
+class Manager(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='manager')
+    retailer = models.ForeignKey(Retailers, on_delete=models.CASCADE, related_name='managers')
+    first_name = models.CharField(max_length=60)
+    last_name = models.CharField(max_length=60)
+    #mobile_number = models.CharField(validators=[phone_regex], max_length=11, blank=True)
+    gender = models.CharField(max_length=10, choices=gender_choices)
+    manager_code = models.CharField(max_length=8, unique=True)
+    dob = models.DateField()
+    date_created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.user
+
+    def get_full_name(self):
+        """ Return the manager's full name """
+        return f"{self.first_name}, {self.last_name}"
+
+    def save(self, *args, **kwargs):
+        state_code = self.retailer.state_code
+        lga_code = self.retailer.lga_code
+        manager_id = self.id
+        business_name = self.retailer.business_name.replace(' ', '').upper()
+        self.manager_code = f"{state_code}-{lga_code}-{manager_id}"
+        super().save(*args, **kwargs) 
+
+    class Meta:
+        ordering = ('-date_created',)
+
+
+class Staff(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='staff')
+    retailer = models.ForeignKey('Retailers', on_delete=models.CASCADE, related_name='staffs')
+    first_name = models.CharField(max_length=60)
+    last_name = models.CharField(max_length=60)
+    gender = models.CharField(max_length=10, choices=gender_choices)
+    #dob = models.DateField()
+    date_created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.user
+
+    def get_full_name(self):
+        """ Return the staff's full name """
+        return f"{self.first_name}, {self.last_name}" 
+
+
+
+    # @property
+    # def manager_code(self):
+    #     """ Generate and return the manager's code """
+    #     state_code = self.retailer.state_code
+    #     lga_code = self.retailer.lga_code
+    #     business_name = self.retailer.business_name.replace(' ', '').upper()
+    #     return f"{state_code}-{lga_code}-{business_name}"
+
 
 
 CYLINDER_STATUS = (("PRE-FILLED", "PRE-FILLED"), ("EMPTY", "EMPTY"))

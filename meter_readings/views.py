@@ -155,14 +155,29 @@ class ResidentialUserMeterReadingSearchAPIView(generics.ListAPIView):
         queryset = self.get_queryset()
         #queryset =  GasMeterStatus.objects.all()
         paginator = self.pagination_class()
-        
+
+
         if not queryset.exists():
             return Response({"message": "No gas meter readings found for this user!"}, status=status.HTTP_404_NOT_FOUND)
         
         paginated_queryset = paginator.paginate_queryset(queryset, request)
         serializer = self.get_serializer(paginated_queryset, many=True)
         #return Response(serializer.data, status=status.HTTP_200_OK)
-        return paginator.get_paginated_response(serializer.data)
+        #return paginator.get_paginated_response(serializer.data)
+        
+        response_data = []
+        for obj in paginated_queryset:
+            user = User.objects.get(id=int(obj.user_id))
+            response_data.append({
+                'full_name': user.get_full_name(),
+                'smart_meter_id': obj.smart_box,
+                'cylinder':obj.cylinder_serial_number,
+                'gas_quantity_remaining': obj.quantity_gas_left,
+                'last_push':obj.last_push
+            })
+
+        return paginator.get_paginated_response(response_data)
+
 
 
 class UserDetailView(APIView):
