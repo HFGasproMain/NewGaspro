@@ -11,6 +11,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from .pagination import LargeResultsSetPagination
+from rest_framework.pagination import PageNumberPagination
+from django.db.models import Q
 
 import time
 
@@ -130,3 +132,28 @@ class RefillOrderDetailView(generics.RetrieveAPIView):
         return Response(serializer.data)
 
 		
+
+class RefillOrderSearchAPIView(generics.ListAPIView):
+    serializer_class = RefillOrderSerializer
+    pagination_class = LargeResultsSetPagination
+
+    def get_queryset(self):
+        query = self.request.query_params.get('query')
+        queryset = RefillOrder.objects.all()
+
+        if query:
+            queryset = queryset.filter(
+                Q(user__first_name__icontains=query) |
+                Q(user__last_name__icontains=query) |
+                Q(user__phone_number__icontains=query) |
+                Q(smart_box__box_id__icontains=query)
+            )
+
+        return queryset
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        paginator = self.pagination_class()
+        paginated_queryset = paginator.paginate_queryset(queryset, request)
+        serializer = self.get_serializer(paginated_queryset, many=True)
+        return paginator.get_paginated_response(serializer.data)
