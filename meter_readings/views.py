@@ -204,7 +204,7 @@ class UserDetailView(APIView):
             'address': user.get_full_address(),
             'phone_number': phone_number,
             'smart_box_id': smart_box_id,
-            'date_of_onboarding': date_of_onboarding
+            'date_of_onboarding': date_of_onboarding            
         }
 
         return Response(data)
@@ -303,16 +303,22 @@ class GasReadingHistoryAPIView(generics.ListAPIView):
 
 
 class UserGasConsumptionAndCostAPIView(APIView):
-    """ API to Get User Gas Consumption & Cost Details """
+    """ API to Get User Gas Consumption & Cost Details Via User ID"""
     def get(self, request, user_id):
         
         try:
             user = User.objects.get(id=user_id)
         except User.DoesNotExist:
-            return Response({'error': 'User not found'}, status=404)
+            return Response({'error': 'User not found!'}, status=404)
+
+        # try:
+        #     smart_box = SmartBox.objects.get(box_id=user_id) # bad practice, but too lazy to rewrite the code since it does the job
+        # except SmartBox.DoesNotExist:
+        #     return Response({'error':'SmartBox not found!'})
+
 
         # Check if GasMeterStatus records exist for the user
-        gas_meter_status_exists = GasMeterStatus.objects.filter(user_id=user_id).exists()
+        gas_meter_status_exists = GasMeterStatus.objects.filter(user_id=user_id).exists() | GasMeterStatus.objects.filter(smart_box=user).exists()
 
         total_gas_quantity_purchased = 0
         total_transactional_amount = 0
@@ -377,6 +383,140 @@ class UserGasConsumptionAndCostAPIView(APIView):
         }
         
         return Response(data)
+
+
+
+class UserGasConsumptionAndCostSmartBoxAPIView(APIView):
+    """ API to Get User Gas Consumption & Cost Details Via Smart Box ID"""
+    def get(self, request, smart_box_id):
+        
+        
+        # try:
+        #     smart_box = GasMeterStatus.objects.filter(smart_box=smart_box_id).last()
+        #     user_ini = ResidentialAssignCylinder.objects.get(smart_box=smart_box)
+        #     user = User.objects.get(id=user_ini.user.id)
+        # except SmartBox.DoesNotExist:
+        #     return Response({'error':'SmartBox not found!'})
+
+        # try:
+        #     gas_meter_status = GasMeterStatus.objects.filter(smart_box__smart_box_id=smartbox_id).latest('last_push')
+        #     user = gas_meter_status.user
+        # except GasMeterStatus.DoesNotExist:
+        #     return Response({'error': 'Gas meter status not found for the provided smartbox ID.'}, status=404)
+        # except User.DoesNotExist:
+        #     return Response({'error': 'User not found for the provided smartbox ID.'}, status=404)
+
+        try:
+            gas_meter_status_exists = GasMeterStatus.objects.filter(smart_box=smart_box_id).latest('last_push')
+        except GasMeterStatus.DoesNotExist:
+            return Response({'error': 'Gas meter status not found for the provided smartbox ID.'}, status=404)
+
+        user = gas_meter_status_exists.user_id
+        user = User.objects.get(id=user)
+        print(f'user => {user}')
+        full_name = f"{user.first_name} {user.last_name}" if user else ''
+
+
+        # Check if GasMeterStatus records exist for the user
+        # gas_meter_status_exists = GasMeterStatus.objects.filter(smart_box=smart_box).exists()
+        # print(f'gas_meter_check => {gas_meter_status_exists}')
+
+        total_gas_quantity_purchased = 0
+        total_transactional_amount = 0
+        total_quantity_used = 0
+        total_gas_amount = 0
+        total_gas_cost = 0
+        total_gas_consumption = 0
+        remaining_gas_quantity = 0
+        virtual_wallet_balance = 'null'
+        virtual_wallet_debt = 'null'
+        smart_box_id = 'null'
+
+
+        if gas_meter_status_exists:
+            total_gas_consumption = GasMeterStatus.objects.filter(user_id=user).aggregate(total_gas_consumption=
+            Sum('quantity_used'))['total_gas_consumption']
+            #gas_cost = GasMeterStatus.objects.filter(user_id=user_id).aggregate(total_gas_cost=Sum('quantity_used'))['total_gas_cost']
+            # Replace 'OtherBillModel' with the actual model representing other billable costs
+            #other_billable_costs = OtherBillModel.objects.filter(user_id=user_id).aggregate(total_cost=Sum('amount'))['total_cost']
+            smart_box_id = GasMeterStatus.objects.filter(user_id=user.id).values_list('smart_box', flat=True).first()
+
+       
+            # Calculate the remaining gas quantity (quantity_gas_left) for the user
+            remaining_gas_quantity = GasMeterStatus.objects.filter(user_id=user).latest('last_push').quantity_gas_left
+        
+
+            # Calculate the total gas quantity purchased by the user
+            total_gas_quantity_purchased = GasMeterStatus.objects.filter(user_id=user_id).aggregate(total_gas_quantity_purchased=
+                Sum('quantity_supplied'))['total_gas_quantity_purchased']
+            total_quantity_used = GasMeterStatus.objects.filter(user_id=user.id).aggregate(total_quantity_used=
+                Sum('quantity_used'))['total_quantity_used']
+
+            # Calculate the total cost of gas for the user (assuming a fixed cost per unit of gas)
+            unit_cost_of_gas = 250 #untrue value
+            other_billable_costs = 1000 # untrue value
+            #total_gas_amount = total_quantity_used * <amount_per_unit_of_gas>
+            total_gas_cost = total_gas_quantity_purchased * unit_cost_of_gas
+
+            total_transactional_amount = total_gas_cost + other_billable_costs
+            total_cost = total_gas_cost
+            
+            # Get the user's virtual wallet details
+            #wallet = Wallet.objects.get(user=user)
+
+            # Get or create the Wallet object for the user
+            wallet, created = Wallet.objects.get_or_create(user=user)
+            virtual_wallet_balance = wallet.balance
+            virtual_wallet_debt = wallet.debt
+
+
+        data = {
+            'full_name': user.get_full_name(),
+            'smart_box_id': smart_box_id,
+            'quantity_remaining':remaining_gas_quantity,
+            #'total_gas_consumption': total_gas_consumption,
+            'total_gas_amount': total_gas_cost,
+            'total_gas_quantity_purchased':total_gas_quantity_purchased,
+            'total_transactional_amount': total_transactional_amount,
+            #'total_quantity_used':total_quantity_used,
+            'virtual_wallet_balance': virtual_wallet_balance,
+            'debt': virtual_wallet_debt
+        }
+        
+        return Response(data)
+
+
+
+# class UserGasConsumptionAndCostAPIView(APIView):
+#     """ API to Get User Gas Consumption & Cost Details Via Smartbox ID """
+
+#     def get(self, request, smartbox_id):
+#         try:
+#             gas_meter_status = GasMeterStatus.objects.filter(smart_box=smartbox_id).latest('last_push')
+#         except GasMeterStatus.DoesNotExist:
+#             return Response({'error': 'Gas meter status not found for the provided smartbox ID.'}, status=404)
+
+#         user = gas_meter_status.user_id
+#         full_name = f"{user.first_name} {user.last_name}" if user else ''
+
+#         remaining_gas_quantity = gas_meter_status.quantity_gas_left
+#         total_gas_quantity_purchased = GasMeterStatus.objects.filter(smart_box=smartbox_id).aggregate(total_gas_quantity_purchased=Sum('quantity_supplied'))['total_gas_quantity_purchased']
+#         unit_cost_of_gas = 250  # Replace with the actual unit cost of gas
+#         total_gas_cost = total_gas_quantity_purchased * unit_cost_of_gas
+#         total_transactional_amount = total_gas_cost
+
+#         data = {
+#             'smart_box_id': smartbox_id,
+#             'full_name': full_name,
+#             'total_gas_amount': total_gas_cost,
+#             'total_gas_quantity_purchased': total_gas_quantity_purchased,
+#             'total_transactional_amount': total_transactional_amount,
+#             'virtual_wallet_balance': 'null',
+#             'debt': 'null'
+#         }
+
+#         return Response(data)
+
 
 
 class CreateActivatedSmartboxReadingView(generics.CreateAPIView):

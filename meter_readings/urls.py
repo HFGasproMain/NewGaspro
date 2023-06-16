@@ -1,7 +1,8 @@
 from django.urls import path 
 from .views import SmartBoxDefaultReadingsView, AssignedSmartBoxReadingsView, CreateActivatedSmartboxReadingView, ActivatedSmartBoxReadingsListView, \
 	CollectGasReadingView, GasReadingHistoryAPIView, GasMeterStatusView, SmartBoxReadings, ResidentialUserMeterReadingsListView, \
-	 ResidentialUserMeterReadingsHistoryAPIView, ResidentialUserMeterReadingSearchAPIView, UserGasConsumptionAndCostAPIView, UserDetailView
+	 ResidentialUserMeterReadingsHistoryAPIView, ResidentialUserMeterReadingSearchAPIView, UserGasConsumptionAndCostAPIView, UserDetailView, \
+	 UserGasConsumptionAndCostSmartBoxAPIView
 
 urlpatterns = [
 	
@@ -21,6 +22,7 @@ urlpatterns = [
 
 	# meter_reading user_detail
 	path('smartboxreadings/user-consumption/<int:user_id>/', UserGasConsumptionAndCostAPIView.as_view(), name='user_gas_consumption_and_cost'),
+	path('smartboxreadings/usergas-consumption/<str:smart_box_id>/', UserGasConsumptionAndCostSmartBoxAPIView.as_view(), name='user_gas_consumption_and_cost'),
 	path('smartboxreadings/user/<int:user_id>/', UserDetailView.as_view(), name='user-detail'),
 
 	# gas reading search

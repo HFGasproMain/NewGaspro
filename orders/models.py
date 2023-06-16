@@ -63,8 +63,9 @@ class RefillOrder(models.Model):
 	cylinder = models.ForeignKey(Cylinder, on_delete=models.CASCADE, related_name='cylinders')
 	quantity_remaining = models.DecimalField(decimal_places=2, max_digits=5)
 	status = models.CharField(max_length=20, choices=status_choices, default='pending', blank=True)
-	transaction_id = models.CharField(max_length=200, blank=True)
-	#do = models.ForeignKey(DeliveryOfficer, on_delete=models.SET_NULL, null=True, blank=True)
+	transaction_id = models.CharField(max_length=5, blank=True, null=True)
+	order_id = models.CharField(max_length=5, blank=True, null=True, unique=True)
+	access_code = models.CharField(max_length=6, null=True, unique=True)
 	date_created = models.DateTimeField(auto_now_add=True)
 
 	def approve_order(self):
@@ -86,9 +87,42 @@ class RefillOrder(models.Model):
 	def __str__(self):
 		return self.status
 
+	def generate_unique_order_id(self):
+		order_id = get_random_string(length=5, allowed_chars='0123456789')
+		while RefillOrder.objects.filter(order_id=order_id).exists():
+			order_id = get_random_string(length=5, allowed_chars='0123456789')
+		return order_id
+
+	
+	# def generate_unique_order_id(self):
+	#     order_id = get_random_string(length=5, allowed_chars='0123456789')
+	#     while True:
+	#         try:
+	#             with transaction.atomic():
+	#                 self.order_id = order_id
+	#                 self.save()
+	#                 break
+	#         except IntegrityError:
+	#             order_id = get_random_string(length=5, allowed_chars='0123456789')
+	#     return order_id
+
+
+
+	def generate_unique_access_code(self):
+		access_code = get_random_string(length=6, allowed_chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')
+		while RefillOrder.objects.filter(access_code=access_code).exists():
+			access_code = get_random_string(length=6, allowed_chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')
+		return access_code
+
+	def save(self, *args, **kwargs):
+		if not self.order_id:
+			self.order_id = self.generate_unique_order_id()
+		if not self.access_code:
+			self.access_code = self.generate_unique_access_code()
+		super().save(*args, **kwargs)
+
 	class Meta:
 		ordering = ['-date_created']
-
 
 
 # new_token: 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

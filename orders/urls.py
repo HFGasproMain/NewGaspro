@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import OnboardingOrderCreateView, OnboardedOrderListView, RefillOrderList
+from .views import OnboardingOrderCreateView, OnboardedOrderListView, RefillOrderList, RefillOrderDetailView
 
 urlpatterns = [
 	path('onboard-order/', OnboardingOrderCreateView.as_view(), name='onboard-order'),
@@ -7,4 +7,5 @@ urlpatterns = [
 
 	# refill orders
 	path('refill-orders/', RefillOrderList.as_view(), name='refill_order_list'),
+	path('refill-order/<str:refill_order_id>/', RefillOrderDetailView.as_view(), name='order-detail')
 ]

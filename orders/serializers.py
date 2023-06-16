@@ -3,6 +3,7 @@ from .models import OnboardingOrder, RefillOrder
 from billing.models import OrderOnboardBilling
 from billing.serializers import OnboardOrderSerializer
 from accounts.models import User
+from auxilliary.models import Auxiliary
 
 class OnboardingOrderSerializer(serializers.ModelSerializer):
 	cy_type = (
@@ -48,6 +49,62 @@ class OnboardedOrderListSerializer(serializers.ModelSerializer):
 
 
 class RefillOrderSerializer(serializers.ModelSerializer):
+	user_full_name = serializers.SerializerMethodField()
+	user_address = serializers.SerializerMethodField()
+	user_phone_number = serializers.SerializerMethodField()
+
+	def get_user_full_name(self, obj):
+		return obj.user.get_full_name()
+
+	def get_user_address(self, obj):
+		return obj.user.address  
+
+	def get_user_phone_number(self, obj):
+		return obj.user.phone_number  
+
+	class Meta:
+		model = RefillOrder
+		fields = ['id', 'user_full_name', 'user_address', 'user_phone_number', 'smart_box', 'date_created','status']
+		#fields = '__all__'
+
+
+
+class RefillOrderDetailSerializer(serializers.ModelSerializer):
+    user_full_name = serializers.SerializerMethodField()
+    user_address = serializers.SerializerMethodField()
+    user_phone_number = serializers.SerializerMethodField()
+    user_class = serializers.SerializerMethodField()
+    auxiliary_full_name = serializers.SerializerMethodField()
+    auxiliary_phone_number = serializers.SerializerMethodField()
+    cylinder_type = serializers.SerializerMethodField()
+
+    def get_user_full_name(self, obj):
+        return obj.user.get_full_name()
+
+    def get_user_address(self, obj):
+        return obj.user.address  # Replace 'address' with the actual field name
+
+    def get_user_phone_number(self, obj):
+        return obj.user.phone_number  # Replace 'phone_number' with the actual field name
+
+    def get_user_class(self, obj):
+        return obj.user.user_class  # Replace 'user_class' with the actual field name
+
+    def get_auxiliary_full_name(self, obj):
+        auxiliary = obj.user.user_auxiliary
+        return auxiliary.get_full_name() if auxiliary else None
+
+    def get_auxiliary_phone_number(self, obj):
+        auxiliary = obj.user.user_auxiliary
+        return auxiliary.get_phone_number() if auxiliary else None
+
+    def get_cylinder_type(self, obj):
+    	return obj.cylinder.cylinder_capacity 
+
+ 
+
     class Meta:
         model = RefillOrder
-        fields = '__all__'
+        fields = ['id', 'user_full_name', 'user_address', 'user_phone_number', 'user_class', 'smart_box', 'cylinder', 'cylinder_type', 
+        	'order_id', 'status', 'access_code', 'transaction_id', 'date_created', 'auxiliary_full_name', 'auxiliary_phone_number']
+
