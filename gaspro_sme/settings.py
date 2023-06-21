@@ -128,21 +128,20 @@ CORS_ALLOWED_ORIGINS = [
 # SMTP Email Configuration
 #EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-EMAIL_HOST = 'your_smtp_host' 
+EMAIL_HOST = 'smtp.gmail.com' 
 EMAIL_PORT = 587 
-EMAIL_HOST_USER = 'your_email@example.com' 
+EMAIL_HOST_USER = 'support@homefort.com' 
 EMAIL_HOST_PASSWORD = 'your_email_password' 
 EMAIL_USE_TLS = True 
 
 # Default email address for sending emails
-DEFAULT_FROM_EMAIL = 'your_email@example.com'
+DEFAULT_FROM_EMAIL = 'support@homefort.com'
 
 # Password reset email settings
 PASSWORD_RESET_TIMEOUT_DAYS = 1 
 
 # Email template
 EMAIL_TEMPLATE_NAME = 'registration/password_reset_email.html'
-
 
 
 # Spectacular Customization

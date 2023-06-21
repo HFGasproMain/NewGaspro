@@ -23,6 +23,29 @@ class User(AbstractBaseUser, PermissionsMixin):
         (RESIDENT_CUSTOMERS, 'Residential') # retail_users
     )
 
+    lagos_lga = (
+        ('Agege', 'Agege'),
+        ('Ajeromi-Ifelodun', 'Ajeromi-Ifelodun'),
+        ('Alimosho', 'Alimosho'),
+        ('Apapa', 'Apapa'),
+        ('Amuwo-Odofin', 'Amuwo-Odofin'),
+        ('Badagry', 'Badagry'),
+        ('Epe','Epe'),
+        ('Eti-Osa', 'Eti-Osa'),
+        ('Ibeju-Lekki','Ibeju-Lekki'),
+        ('Ifako-Ijaiye','Ifako-Ijaiye'),
+        ('Ikeja','Ikeja'),
+        ('Ikorodu','Ikorodu'),
+        ('Kosofe','Kosofe'),
+        ('Lagos Island','Lagos Island'),
+        ('Lagos Mainland','Lagos Mainland'),
+        ('Mushin','Mushin'),
+        ('Ojo','Ojo'),
+        ('Oshodi-Isolo','Oshodi-Isolo'),
+        ('Somolu','Somolu'),
+        ('Surulere','Surulere'),
+    )
+
     uid = models.UUIDField(unique=True, editable=False, default=uuid.uuid4, verbose_name='Public identifier')
     email = models.CharField(max_length=50, null=True, blank=True)
     phone_number = models.CharField(unique=True, validators=[phone_regex], max_length=11, blank=True)
@@ -36,7 +59,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     user_class = models.CharField(max_length=30, null=True, blank=True, default='Residential Customers')
     date_to_onboard = models.DateField(null=True)
     address = models.TextField(null=True)
-    lga = models.CharField(max_length=100, null=True)
+    lga = models.CharField(max_length=100, choices=lagos_lga, null=True)
     state = models.CharField(max_length=100, null=True)
     is_staff = models.BooleanField(default=False)
     subscription_status = models.BooleanField(default=False)
