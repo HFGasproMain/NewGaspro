@@ -5,6 +5,9 @@ from billing.serializers import OnboardOrderSerializer
 from accounts.models import User
 from delivery.models import DeliveryOfficer
 from auxilliary.models import Auxiliary
+from rest_framework import serializers
+from asset.models import Cylinder, OtherBillableAssets
+
 
 class OnboardingOrderSerializer(serializers.ModelSerializer):
 	cy_type = (
@@ -183,4 +186,52 @@ class RefillOrderDetailSerializer(serializers.ModelSerializer):
         model = RefillOrder
         fields = ['id', 'user_full_name', 'user_address', 'user_lga', 'user_phone_number', 'user_class', 'smart_box', 'cylinder', 'cylinder_type', 
         	'order_id', 'status', 'access_code', 'transaction_id', 'delivery_officer_fullname', 'date_created', 'auxiliary_full_name', 'auxiliary_phone_number']
+
+
+
+# Swap Bottle Serializers
+class CylinderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cylinder
+        fields = ['cylinder_serial_number', 'total_weight']
+
+class OtherBillableAssetsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OtherBillableAssets
+        fields = ['low_pressure_regulator_price_per_yard', 'high_pressure_regulator_price_per_yard',
+                  'low_pressure_hose_price_per_yard', 'high_pressure_hose_price_per_yard',
+                  'subsidized_cylinder_price']
+
+class RefillOrderSwapSerializer(serializers.ModelSerializer):
+    old_cylinder = CylinderSerializer()
+    new_cylinder_serial_number = serializers.CharField(max_length=50)
+    low_pressure_regulator_yards = serializers.DecimalField(max_digits=10, decimal_places=2, required=False)
+    high_pressure_regulator_yards = serializers.DecimalField(max_digits=10, decimal_places=2, required=False)
+    low_pressure_hose_yards = serializers.DecimalField(max_digits=10, decimal_places=2, required=False)
+    high_pressure_hose_yards = serializers.DecimalField(max_digits=10, decimal_places=2, required=False)
+    subsidized_cylinder_yards = serializers.DecimalField(max_digits=10, decimal_places=2, required=False)
+
+    class Meta:
+        model = RefillOrder
+        fields = ['old_cylinder', 'new_cylinder_serial_number', 'total_weight',
+                  'low_pressure_regulator_yards', 'high_pressure_regulator_yards',
+                  'low_pressure_hose_yards', 'high_pressure_hose_yards',
+                  'subsidized_cylinder_yards']
+
+    def validate(self, attrs):
+        old_cylinder = attrs.get('old_cylinder')
+        new_cylinder_serial_number = attrs.get('new_cylinder_serial_number')
+
+        # Check if the old cylinder exists
+        if old_cylinder is None:
+            raise serializers.ValidationError("Old cylinder details are required.")
+
+        # Check if the new cylinder exists
+        try:
+            new_cylinder = Cylinder.objects.get(cylinder_serial_number=new_cylinder_serial_number)
+            attrs['new_cylinder'] = new_cylinder
+        except Cylinder.DoesNotExist:
+            raise serializers.ValidationError("New cylinder does not exist.")
+
+        return attrs
 
