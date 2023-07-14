@@ -6,7 +6,7 @@ from accounts.models import User
 from delivery.models import DeliveryOfficer
 from auxilliary.models import Auxiliary
 from rest_framework import serializers
-from asset.models import Cylinder, OtherBillableAssets
+from asset.models import Cylinder, OtherBillableAssets, GasPrice
 
 
 class OnboardingOrderSerializer(serializers.ModelSerializer):
@@ -57,6 +57,7 @@ class RefillOrderSerializer(serializers.ModelSerializer):
 	user_address = serializers.SerializerMethodField()
 	user_lga = serializers.SerializerMethodField()
 	user_phone_number = serializers.SerializerMethodField()
+	user_cylinder_type = serializers.SerializerMethodField()
 
 	def get_user_full_name(self, obj):
 		return obj.user.get_full_name()
@@ -68,12 +69,15 @@ class RefillOrderSerializer(serializers.ModelSerializer):
 		return obj.user.lga  
 
 	def get_user_phone_number(self, obj):
-		return obj.user.phone_number  
+		return obj.user.phone_number 
+
+	def get_user_cylinder_type(self, obj):
+		return obj.cylinder.cylinder_capacity
 
 	class Meta:
 		model = RefillOrder
-		fields = ['id', 'user_full_name', 'user_address', 'user_lga', 'user_phone_number', 'smart_box', 'transaction_id', 'order_id', 
-		'date_created','status', 'action','action_date']
+		fields = ['id', 'user_full_name', 'user_address', 'user_lga', 'user_phone_number', 'smart_box', 'user_cylinder_type',
+		 'transaction_id', 'order_id', 'date_created','status', 'action','action_date']
 		#fields = '__all__'
 
 	def validate(self, data):

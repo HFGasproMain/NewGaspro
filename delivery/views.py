@@ -18,10 +18,12 @@ class DeliveryOfficerCreateAPIView(generics.CreateAPIView):
 	serializer_class = DeliveryOfficerSerializer
 
 
+
 class DeliveryOfficerListAPIView(generics.ListAPIView):
 	""" API to List all Delivery Officers """
 	queryset = DeliveryOfficer.objects.all()
 	serializer_class = DeliveryOfficerSerializer
+
 
 
 class DeliveryOfficerOrdersListAPIView(generics.RetrieveAPIView):

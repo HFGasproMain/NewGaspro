@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'accounts',
     'auxilliary',
     'asset',
+    'onboarding',
     'billing',
     'meter_readings',
     'retailers',
@@ -51,6 +52,7 @@ INSTALLED_APPS = [
     'delivery',
     'notifications',
     'waitlist',
+    'cards',
 
     # Dependencies
     'rest_framework',

@@ -108,7 +108,33 @@ class OtherBillableAssetsSerializer(serializers.ModelSerializer):
     class Meta:
         model = OtherBillableAssets
         fields = '__all__'
+    
+
+class AddonAssignSerializer(serializers.Serializer):
+    cylinders = serializers.PrimaryKeyRelatedField(queryset=Cylinder.objects.filter(cylinder_status='unassigned'), 
+        many=True, required=False)
+    smart_meters = serializers.PrimaryKeyRelatedField(queryset=SmartBox.objects.filter(smartbox_status='unassigned'), 
+        many=True, required=False)
+
+    def validate(self, attrs):
+        cylinders = attrs.get('cylinders', [])
+        smart_meters = attrs.get('smart_meters', [])
+
+        # Check if the assets already exist for the user
+        user = self.context['user']
+        existing_cylinders = user.cylinders.all()
+        existing_smart_meters = user.smart_meters.all()
+
+        for cylinder in cylinders:
+            if cylinder in existing_cylinders:
+                raise serializers.ValidationError(f"Cylinder with ID {cylinder.id} is already assigned to the user.")
         
+        for smart_meter in smart_meters:
+            if smart_meter in existing_smart_meters:
+                raise serializers.ValidationError(f"Smart Meter with ID {smart_meter.id} is already assigned to the user.")
+
+        return attrs
+
 
 """
 # class QuestionnaireSerializer(serializers.ModelSerializer):

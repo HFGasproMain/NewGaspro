@@ -78,9 +78,10 @@ class RefillOrder(models.Model):
 	delivery_officer = models.ForeignKey(DeliveryOfficer, on_delete=models.CASCADE, null=True, related_name='attached_delivery_officer')
 	date_created = models.DateTimeField(auto_now_add=True)
 	action = models.CharField(max_length=20, choices=ACTION_CHOICES, blank=True, null=True)
-	#approved_date = models.DateField(blank=True, null=True)
-	#rescheduled_date = models.DateField(blank=True, null=True)
 	action_date = models.DateField(null=True, blank=True)
+	old_cylinder = models.ForeignKey(Cylinder, on_delete=models.CASCADE, null=True, related_name='customer_low_cylinder')
+	new_cylinder = models.ForeignKey(Cylinder, on_delete=models.CASCADE, null=True, related_name='delivery_new_cylinder')
+
     #rescheduled_date = models.DateField(blank=True, null=True)
 
 	def approve_order(self):

@@ -12,7 +12,7 @@ from meter_readings.models import SmartBoxMonitor, SmartScaleMonitor, SmartBoxRe
 
 from .serializers import CylinderSerializer, CylinderListSerializer, SMEAssignCylinderSerializer, \
 	SmartScaleSerializer, SmartBoxSerializer, ResidentialAssignCylinderSerializer, OtherBillableAssetsSerializer, \
-	GasPriceSerializer, CylinderDetailSerializer
+	GasPriceSerializer, CylinderDetailSerializer, AddonAssignSerializer
 
 
 """
@@ -345,3 +345,20 @@ class GasPriceUpdateView(generics.UpdateAPIView):
 	queryset = GasPrice.objects.all()
 	serializer_class = GasPriceSerializer
 	permission_classes = (AllowAny,)
+
+
+
+class AddonAssignView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = AddonAssignSerializer
+    #permission_classes = [IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        user = self.request.user
+        serializer.context['user'] = user  # Pass the current user to the serializer's context
+
+        self.perform_create(serializer)
+        return Response({'status': 'success', 'message': 'Assets assigned successfully.'}, status=status.HTTP_201_CREATED)

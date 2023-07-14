@@ -160,3 +160,10 @@ def send_notification(request):
 	return JsonResponse({"message": "success", "data": quantity_remaining}, status=status.HTTP_200_OK)
 
 
+
+class NotificationListView(generics.ListAPIView):
+    serializer_class = NotificationsSerializer
+
+    def get_queryset(self):
+        user_id = self.kwargs['user_id']
+        return Notifications.objects.filter(user_id=user_id)

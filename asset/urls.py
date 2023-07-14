@@ -4,7 +4,7 @@ from .views import CylinderCreateView, CylinderListView, CylinderDeleteView, Cyl
 	 SmartBoxDeleteView, SmartBoxUpdateView, SmartBoxListView, SMEAssignCylinderCreateView, ResidentialAssignedCylinderListView, \
      SMEUserAssignedCylinderHistory, AssignedCylinderHistory, ResidentialAssignCylinderCreateView, CylinderDetailView, \
      cylinder_detail_view, OtherBillableAssetsCreateView, GasPriceCreateView, OtherBillableAssetsListView, GasPriceListView, \
-     OtherBillableAssetsUpdateView, GasPriceUpdateView
+     OtherBillableAssetsUpdateView, GasPriceUpdateView, AddonAssignView
 
 urlpatterns = [
 	# assets create
@@ -13,8 +13,11 @@ urlpatterns = [
     path("smartbox-create/", SmartBoxCreateView.as_view(), name='smartbox-create'),
 
     # assign cylinder
-    path('sme/cylinder-onboard/', SMEAssignCylinderCreateView.as_view(), name='cylinder-onboard'),
-    path('residential/cylinder-onboard/', ResidentialAssignCylinderCreateView.as_view(), name='residential-cylinder-onboard'),
+    path('sme/onboard-assets/', SMEAssignCylinderCreateView.as_view(), name='cylinder-onboard'),
+    path('residential/onboard-assets/', ResidentialAssignCylinderCreateView.as_view(), name='residential-cylinder-onboard'),
+
+    # addon assign
+    path('residential/addon/', AddonAssignView.as_view(), name='addon-assign'),
 
     # assets list
     path("cylinders/", CylinderListView.as_view(), name='cylinders'),

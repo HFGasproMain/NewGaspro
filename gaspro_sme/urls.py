@@ -29,6 +29,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path('api/v2/accounts/', include('accounts.urls')),
     path('api/v2/assets/', include('asset.urls')),
+    path('api/v2/onboarding/', include('onboarding.urls')),
     path('api/v2/auxilliary/', include('auxilliary.urls')),
     path('api/v2/billings/', include('billing.urls')),
     path('api/v2/meter-readings/', include('meter_readings.urls')),
@@ -38,6 +39,7 @@ urlpatterns = [
     path('api/v2/delivery/', include('delivery.urls')),
     path('api/v2/notifications/', include('notifications.urls')),
     path('api/v2/waitlist/', include('waitlist.urls')),
+    path('api/v2/cards/', include('cards.urls')),
 
 
     # Default Auth

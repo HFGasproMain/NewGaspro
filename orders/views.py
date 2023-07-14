@@ -1,15 +1,17 @@
 from django.shortcuts import render
 from django.utils.timezone import make_aware
+from django.utils.crypto import get_random_string
+
 import datetime
 from datetime import datetime as dt
 #from datetime import timedelta
 from .models import OnboardingOrder, RefillOrder, RefillOrderAssignDeliveryOfficer
-from asset.models import ResidentialAssignCylinder
+from asset.models import ResidentialAssignCylinder, GasPrice, OtherBillableAssets
 from accounts.models import User
 from delivery.models import DeliveryOfficer
 from billing.models import OrderOnboardBilling
 from .serializers import OnboardingOrderSerializer, OnboardedOrderListSerializer, RefillOrderSerializer, RefillOrderDetailSerializer, \
-    RefillOrderAcceptSerializer, RefillOrderDeliveryAssignSerializer, RefillOrderDeliveryAcceptSerializer
+    RefillOrderAcceptSerializer, RefillOrderDeliveryAssignSerializer, RefillOrderDeliveryAcceptSerializer, RefillOrderSwapSerializer
 
 from rest_framework import generics, status
 from rest_framework.decorators import api_view, permission_classes
@@ -63,7 +65,7 @@ class OnboardedOrderListView(generics.ListAPIView):
 			
 
 
-class RefillOrderList(APIView):
+class RefillOrderLists(APIView):
 	""" API to See Bottle Swap Orders """
 	pagination_class = LargeResultsSetPagination
 	def get(self, request):
@@ -78,8 +80,34 @@ class RefillOrderList(APIView):
 		# Serialize the paginated results
 		serializer = RefillOrderSerializer(paginated_refill_orders, many=True)
 
+        
+        #print(f'serializer = {serializer}')
+
 		# Return the paginated response
 		return paginator.get_paginated_response(serializer.data)
+        #print(f'{serializer}')
+
+
+class RefillOrderList(APIView):
+    """ API to See Bottle Swap Orders """
+    pagination_class = LargeResultsSetPagination
+    def get(self, request):
+        refill_orders = RefillOrder.objects.all()
+
+        # Create an instance of the pagination class
+        paginator = self.pagination_class()
+
+        # Paginate the queryset
+        paginated_refill_orders = paginator.paginate_queryset(refill_orders, request)
+        serializer = RefillOrderSerializer(paginated_refill_orders, many=True)
+        print(f'data here {serializer.data}')
+        return paginator.get_paginated_response(serializer.data)
+
+        
+        #print(f'serializer = {serializer}')
+
+        # Return the paginated response
+        #return paginator.get_paginated_response(serializer.data)
 
 
 
@@ -279,6 +307,80 @@ class RefillOrderDeliveredAPIView(generics.UpdateAPIView):
         else:
             return Response({'status': 'error', 'message': 'No action was taken or an error occured!'}, status=status.HTTP_400_BAD_REQUEST)
         
+
+# final_phase
+class RefillOrderSwapAPIView(generics.UpdateAPIView):
+    """API view for performing bottle swap and calculating invoice"""
+    queryset = RefillOrder.objects.all()
+    serializer_class = RefillOrderSwapSerializer
+
+    def update(self, request, *args, **kwargs):
+        refill_order = self.get_object()
+        serializer = self.get_serializer(refill_order, data=request.data, partial=True)
+        if serializer.is_valid():
+            # Perform bottle swap
+            old_cylinder = refill_order.cylinder
+            new_cylinder = refill_order.new_cylinder
+
+            # Calculate remnant
+            total_weight = serializer.validated_data.get('total_weight')
+            tare_weight = old_cylinder.tare_weight
+            remnant = total_weight - tare_weight
+
+            # Calculate quantity billable
+            content_f = new_cylinder.capacity
+            quantity_billable = content_f - remnant
+
+            # Calculate invoice
+            gas_price = GasPrice.objects.latest('date_added').current_price
+            invoice = gas_price * quantity_billable
+
+            # Check if billable assets are required
+            billable_assets = serializer.validated_data.get('billable_assets')
+            if billable_assets:
+                # Retrieve billable assets prices
+                other_assets = OtherBillableAssets.objects.latest('date_added')
+
+                # Calculate billable assets cost
+                billable_assets_cost = 0
+                if billable_assets.get('low_pressure_regulator'):
+                    billable_assets_cost += other_assets.low_pressure_regulator_price_per_yard * billable_assets['low_pressure_regulator']
+                if billable_assets.get('high_pressure_regulator'):
+                    billable_assets_cost += other_assets.high_pressure_regulator_price_per_yard * billable_assets['high_pressure_regulator']
+                if billable_assets.get('low_pressure_hose'):
+                    billable_assets_cost += other_assets.low_pressure_hose_price_per_yard * billable_assets['low_pressure_hose']
+                if billable_assets.get('high_pressure_hose'):
+                    billable_assets_cost += other_assets.high_pressure_hose_price_per_yard * billable_assets['high_pressure_hose']
+                if billable_assets.get('subsidized_cylinder'):
+                    billable_assets_cost += other_assets.subsidized_cylinder_price * billable_assets['subsidized_cylinder']
+
+                # Add billable assets cost to invoice
+                invoice += billable_assets_cost
+
+            # Update refill order status
+            refill_order.status = 'delivered'
+            refill_order.save()
+
+            # Generate a unique invoice ID
+            invoice_id = get_random_string(length=10)
+
+            # Create a new invoice record
+            invoice = Invoice.objects.create(
+                invoice_id=invoice_id,
+                refill_order=refill_order,
+                invoice_amount=invoice,
+                billable_assets_cost=billable_assets_cost,
+                total_cost=invoice + billable_assets_cost
+            )
+
+            # Update residential assigned cylinder
+            residential_cylinder = ResidentialAssignCylinder.objects.get(user=refill_order.user)
+            residential_cylinder.cylinder = new_cylinder
+            residential_cylinder.save()
+
+            return Response({'status': 'success', 'message': 'Bottle swap successful'}, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 
