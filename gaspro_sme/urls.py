@@ -26,7 +26,7 @@ from django.conf.urls.static import static
 # from rest_framework.documentation import include_docs_urls
 
 urlpatterns = [
-    #path("admin/", admin.site.urls),
+    path("admin/", admin.site.urls),
     path('api/v2/accounts/', include('accounts.urls')),
     path('api/v2/assets/', include('asset.urls')),
     path('api/v2/onboarding/', include('onboarding.urls')),
