@@ -323,7 +323,7 @@ class RefillOrderSwapAPIView(generics.UpdateAPIView):
             new_cylinder = refill_order.new_cylinder
 
             # Calculate remnant
-            total_weight = serializer.validated_data.get('total_weight')
+            total_weight = serializer.validated_data.get('cylinder_total_weight')
             tare_weight = old_cylinder.tare_weight
             remnant = total_weight - tare_weight
 

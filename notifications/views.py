@@ -145,7 +145,6 @@ class SendNotifications(APIView):
 
 
 
-
 def send_notification(request):
 	#collect_gas_reading = get_object_or_404(GasMeterStatus, smart_box=smart_box_id)
 	meter_readings = GasMeterStatus.objects.all()

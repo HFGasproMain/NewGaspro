@@ -64,6 +64,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     subscription_status = models.BooleanField(default=False)
     date_for_your_onboarding = models.DateField()
+    device_token = models.CharField(max_length=255, blank=True, null=True)
     date_joined = models.DateTimeField(auto_now=True)
     
     USERNAME_FIELD = 'phone_number'

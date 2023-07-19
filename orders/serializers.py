@@ -197,7 +197,7 @@ class RefillOrderDetailSerializer(serializers.ModelSerializer):
 class CylinderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cylinder
-        fields = ['cylinder_serial_number', 'total_weight']
+        fields = ['cylinder_serial_number', 'cylinder_total_weight']
 
 class OtherBillableAssetsSerializer(serializers.ModelSerializer):
     class Meta:
@@ -217,7 +217,7 @@ class RefillOrderSwapSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = RefillOrder
-        fields = ['old_cylinder', 'new_cylinder_serial_number', 'total_weight',
+        fields = ['old_cylinder', 'new_cylinder_serial_number', 'cylinder_total_weight',
                   'low_pressure_regulator_yards', 'high_pressure_regulator_yards',
                   'low_pressure_hose_yards', 'high_pressure_hose_yards',
                   'subsidized_cylinder_yards']

@@ -41,7 +41,7 @@ class RetailersUpdateSerializer(serializers.ModelSerializer):
 class RetailersListSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Retailers
-		fields = ['business_name', 'business_email', 'business_address', 'business_lga', 
+		fields = ['id', 'business_name', 'business_email', 'business_address', 'business_lga', 
 			'business_state', 'business_phone_number', 'state_code', 'lga_code', 'first_reference', 'second_reference', 'is_online', 'date_added']
 
 

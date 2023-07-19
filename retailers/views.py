@@ -11,6 +11,7 @@ from .serializers import RetailersSerializer, RetailersUpdateSerializer, Retaile
 	ROManagersListSerializer
 from .permissions import IsAdminOrReadOnly
 from django.contrib.auth import get_user_model
+from django.http import JsonResponse
 
 User = get_user_model()
 current_date = datetime.today()
@@ -80,7 +81,6 @@ class CreateManagerAPIView(generics.CreateAPIView):
 
         # Return a success response without including the default password
         return Response({'status': 'success', 'message': 'Manager created successfully'}, status=status.HTTP_201_CREATED)
-
     
 
 class ROManagerListView(generics.ListAPIView):
@@ -89,3 +89,23 @@ class ROManagerListView(generics.ListAPIView):
 	serializer_class = ROManagersListSerializer
 	permission_classes = (AllowAny,)
 	pagination_class = LargeResultsSetPagination
+
+
+
+def get_retailer_address(request, retailer_id):
+    try:
+        retailer = Retailers.objects.get(id=retailer_id)
+        address = retailer.business_address
+        lga = retailer.business_lga
+        location = f'{address,lga}'
+        return JsonResponse({'address': lga})
+    except Retailers.DoesNotExist:
+        return JsonResponse({'error': 'Retailer not found'}, status=404)
+
+def get_retailer_code(request, retailer_id):
+    try:
+        retailer = Retailers.objects.get(id=retailer_id)
+        code = retailer.get_retailers_code()
+        return JsonResponse({'code': code})
+    except Retailers.DoesNotExist:
+        return JsonResponse({'error': 'Retailer not found'}, status=404)

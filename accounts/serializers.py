@@ -250,3 +250,9 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
     uid = serializers.CharField()
     token = serializers.CharField()
     new_password = serializers.CharField()
+
+
+class DeviceTokenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['device_token']

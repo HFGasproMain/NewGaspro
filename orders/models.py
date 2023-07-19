@@ -81,6 +81,8 @@ class RefillOrder(models.Model):
 	action_date = models.DateField(null=True, blank=True)
 	old_cylinder = models.ForeignKey(Cylinder, on_delete=models.CASCADE, null=True, related_name='customer_low_cylinder')
 	new_cylinder = models.ForeignKey(Cylinder, on_delete=models.CASCADE, null=True, related_name='delivery_new_cylinder')
+	cylinder_total_weight = models.DecimalField(decimal_places=2, max_digits=5, null=True)
+
 
     #rescheduled_date = models.DateField(blank=True, null=True)
 

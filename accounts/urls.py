@@ -4,7 +4,7 @@ from .views import (
     SMEUserRegistrationView, AdminUserRegistrationView, DeliveryUserRegistrationView, OperationsUserRegistrationView, 
     UserLoginView, UserListView, get_user_profile, AdminLoginView, get_ops_and_delivery, SMEUserListView, ResidentUserRegistrationView,
     AdminUserListView, DeliveryUserListView, UpdateUserProfileView, delete_user, OpsDeliveryListView, PasswordChangeView, 
-    ResidentialUsersListView, PasswordResetView, PasswordResetConfirmView
+    ResidentialUsersListView, PasswordResetView, PasswordResetConfirmView, DeviceTokenUpdateView
 )
 
 urlpatterns =[
@@ -38,6 +38,7 @@ urlpatterns =[
     path("user-profile/<str:user_id>/", get_user_profile, name='user-profile'),
     path("update-profile/<str:user_id>", UpdateUserProfileView.as_view(), name='update-user'),
     path('delete-user/<str:user_id>', delete_user, name='delete-user'),
+    path('update/<int:user_id>/device-token/', DeviceTokenUpdateView.as_view(), name='update-device-token'),
 
     # jwt
     path('token/obtain/', jwt_views.TokenObtainPairView.as_view(), name='token_create'),

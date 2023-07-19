@@ -21,7 +21,7 @@ from django.utils.encoding import force_str, force_bytes
 from .serializers import SMEUserRegistrationSerializer, StaffUserRegistrationSerializer, AdminLoginSerializer, \
 	UserLoginSerializer, UserListSerializer, UserSerializer, OpsDeliverySerializer, ResidentUserRegistrationSerializer, \
     SME2ListSerializer, UserUpdateSerializer, ResidentialUserSerializer, PasswordChangeSerializer, PasswordResetSerializer, \
-    PasswordResetConfirmSerializer
+    PasswordResetConfirmSerializer, DeviceTokenSerializer
     #InvestorSerializer, InvestorClientRequestSerializer, InvestorClientSerializer, InvestorInterestSerializer, \
 
 from .models import User, SMEUser2
@@ -540,3 +540,12 @@ class PasswordResetConfirmView(generics.GenericAPIView):
         else:
             return Response({'detail': 'Invalid token.'})
 
+
+class DeviceTokenUpdateView(generics.UpdateAPIView):
+    serializer_class = DeviceTokenSerializer
+    queryset = User.objects.all()
+    lookup_field = 'id'
+
+    def get_object(self):
+        user_id = self.kwargs['id']
+        return User.objects.get(user_id=user_id)
