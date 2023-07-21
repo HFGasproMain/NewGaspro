@@ -162,6 +162,7 @@ def send_notification(request):
 
 class NotificationListView(generics.ListAPIView):
     serializer_class = NotificationsSerializer
+    pagination_class = MeterReadingsPagination
 
     def get_queryset(self):
         user_id = self.kwargs['user_id']

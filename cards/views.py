@@ -29,9 +29,18 @@ class UserCardDetailView(generics.RetrieveAPIView):
         # if user_first_name:
         #     users = User.objects.filter(first_name__icontains=user_first_name)
         #     queryset = queryset.filter(user__in=users)
-
         return queryset
 
 class CardDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Card.objects.all()
     serializer_class = CardSerializer
+
+
+class UserCardListView(generics.ListAPIView):
+    serializer_class = CardSerializer
+
+    def get_queryset(self):
+        user_id = self.kwargs['user_id']
+        p = Card.objects.filter(user_id=user_id)
+        print(f'p is: {p}')
+        return p
