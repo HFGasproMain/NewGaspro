@@ -364,7 +364,7 @@ class BillableAssetsSerializer(serializers.ModelSerializer):
 # 		fields = ['billable_assets', 'quantity_billable_cost', 'date_created']
 
 
-class InvoiceBreakdownSerializer(serializers.ModelSerializer):
+class Invoice2BreakdownSerializer(serializers.ModelSerializer):
     billable_assets = BillableAssetsSerializer(read_only=True)
     quantity_billable_cost = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
     date_created = serializers.DateTimeField(source='invoice.date_created', read_only=True)
@@ -410,6 +410,29 @@ class Invoice1BreakdownSerializer(serializers.ModelSerializer):
 
         quantity_billable_cost = gas_price_per_kg * quantity_billable + billable_assets_cost
         return quantity_billable_cost
+
+    class Meta:
+        model = RefillOrder
+        fields = ['billable_assets', 'quantity_billable_cost', 'date_created']
+
+
+
+class InvoiceBreakdownSerializer(serializers.ModelSerializer):
+    billable_assets = serializers.SerializerMethodField()
+    quantity_billable_cost = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
+    date_created = serializers.DateTimeField(source='invoice.date_created', read_only=True)
+
+    def get_billable_assets(self, obj):
+        # Access the OtherBillableAssets related to the invoice
+        other_billable_assets = obj.invoice.refillorderbillableassets
+        
+        return {
+            'low_pressure_regulator': other_billable_assets.low_pressure_regulator_price_per_yard,
+            'high_pressure_regulator': other_billable_assets.high_pressure_regulator_price_per_yard,
+            'low_pressure_hose': other_billable_assets.low_pressure_hose_price_per_yard,
+            'high_pressure_hose': other_billable_assets.high_pressure_hose_price_per_yard,
+            'subsidized_cylinder_price': other_billable_assets.subsidized_cylinder_price,
+        }
 
     class Meta:
         model = RefillOrder
