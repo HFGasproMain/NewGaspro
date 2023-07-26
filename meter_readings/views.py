@@ -68,18 +68,6 @@ class CollectGasReadingView(generics.CreateAPIView):
                 new_cylinder_gas_quantity = cylinder.cylinder_gas_content
                 serializer.save()
 
-                # response_data = {
-                # 'user_id': user.id,
-                # 'full_name': [user.first_name, user.last_name],
-                # #'last_name': user.last_name,
-                # 'smart_box': which_smart_box,
-                # 'battery_remaining': battery_remaining,
-                # 'cylinder_serial_number': cylinder.cylinder_serial_number,
-                # 'quantity_supplied': qty_supplied,
-                # 'quantity_used':qty_used,
-                # 'quantity_gas_left': new_cylinder_gas_quantity,
-                # 'last_push': serializer.instance.last_push.strftime('%Y-%m-%d %H:%M:%S')
-                # }
                 response_data = {
                 'user_id': user.id,
                 'first_name': user.first_name,

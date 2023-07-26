@@ -112,6 +112,28 @@ class RefillOrderDeliveryAssignSerializer(serializers.ModelSerializer):
 		fields = ['refill_order', 'delivery_officer']
 
 
+# Nested serializer for customer information
+class CustomerSerializer(serializers.ModelSerializer):
+    full_name = serializers.SerializerMethodField()
+    phone_number = serializers.CharField(source='user.phone_number')
+    address = serializers.CharField(source='user.address')
+
+    def get_full_name(self, obj):
+        return obj.user.get_full_name()
+
+    class Meta:
+        model = RefillOrder
+        fields = ['full_name', 'phone_number', 'address']
+
+# Main serializer
+# class RefillOrderDeliveryAcceptSerializer(serializers.ModelSerializer):
+#     action = serializers.ChoiceField(choices=[('accept', 'Accept'), ('reject', 'Reject')])
+#     customer_info = CustomerSerializer(source='*')
+
+#     class Meta:
+#         model = RefillOrder
+#         fields = ['action', 'customer_info']
+
 class RefillOrderDeliveryAcceptSerializer(serializers.ModelSerializer):
 	action = serializers.ChoiceField(choices=[('accept', 'Accept'), ('reject', 'Reject')])
 	#delivery_officer = serializers.PrimaryKeyRelatedField(queryset=DeliveryOfficer.objects.all())
@@ -120,6 +142,37 @@ class RefillOrderDeliveryAcceptSerializer(serializers.ModelSerializer):
 		model = RefillOrder
 		fields = ['action']
 
+
+class UserDeliveryHistorySerializer(serializers.ModelSerializer):
+    delivery_officer_name = serializers.SerializerMethodField()
+    capacity_delivered = serializers.DecimalField(source='new_cylinder.cylinder_capacity', max_digits=5, decimal_places=2, default=None)
+    gas_price_per_kg = serializers.DecimalField(source='gas_price.current_price', max_digits=5, decimal_places=2, default=None)
+    invoice_amount = serializers.DecimalField(source='invoice.invoice_amount', max_digits=10, decimal_places=2, default=None)
+
+    def get_delivery_officer_name(self, obj):
+        return obj.delivery_officer.get_full_name() if obj.delivery_officer else None
+
+    class Meta:
+        model = RefillOrder
+        fields = ['capacity_delivered', 'gas_price_per_kg', 'delivery_officer_name', 'invoice_amount']
+
+
+class User1DeliveryHistorySerializer(serializers.ModelSerializer):
+    delivery_officer_name = serializers.SerializerMethodField()
+    cylinder_type = serializers.SerializerMethodField()
+
+    def get_delivery_officer_name(self, obj):
+        return obj.delivery_officer.get_full_name()
+
+    def get_cylinder_type(self, obj):
+    	return obj.cylinder.cylinder_capacity
+
+    def get_cylinder_type(self, obj):
+    	return obj.cylinder.cylinder_capacity
+
+    class Meta:
+        model = RefillOrder
+        fields = ['cylinder_type', 'cost_of_gas', 'delivery_officer_name', 'date_created']
 
 
 
@@ -207,35 +260,157 @@ class OtherBillableAssetsSerializer(serializers.ModelSerializer):
                   'subsidized_cylinder_price']
 
 class RefillOrderSwapSerializer(serializers.ModelSerializer):
-    old_cylinder = CylinderSerializer()
-    new_cylinder_serial_number = serializers.CharField(max_length=50)
+    #old_cylinder = CylinderSerializer()
+    old_cylinder_serial_number = serializers.CharField(max_length=50)
+    old_cylinder_total_weight = serializers.DecimalField(max_digits=10, decimal_places=2)
+    new_cylinder = serializers.CharField(max_length=50)
     low_pressure_regulator_yards = serializers.DecimalField(max_digits=10, decimal_places=2, required=False)
     high_pressure_regulator_yards = serializers.DecimalField(max_digits=10, decimal_places=2, required=False)
     low_pressure_hose_yards = serializers.DecimalField(max_digits=10, decimal_places=2, required=False)
     high_pressure_hose_yards = serializers.DecimalField(max_digits=10, decimal_places=2, required=False)
     subsidized_cylinder_yards = serializers.DecimalField(max_digits=10, decimal_places=2, required=False)
 
+    def get_new_cylinder_serial_number(self, obj):
+    	return obj.cylinder.cylinder_serial_number
+
     class Meta:
         model = RefillOrder
-        fields = ['old_cylinder', 'new_cylinder_serial_number', 'cylinder_total_weight',
+        fields = ['old_cylinder_serial_number', 'old_cylinder_total_weight', 'new_cylinder',
                   'low_pressure_regulator_yards', 'high_pressure_regulator_yards',
                   'low_pressure_hose_yards', 'high_pressure_hose_yards',
                   'subsidized_cylinder_yards']
 
-    def validate(self, attrs):
-        old_cylinder = attrs.get('old_cylinder')
-        new_cylinder_serial_number = attrs.get('new_cylinder_serial_number')
+    # def validate(self, data):
+    #     # Get the old cylinder based on the serial number
+    #     old_cylinder_serial_number = data.get('old_cylinder_serial_number')
+    #     try:
+    #         old_cylinder = Cylinder.objects.get(cylinder_serial_number=old_cylinder_serial_number)
+    #     except Cylinder.DoesNotExist:
+    #         raise serializers.ValidationError(f"Old cylinder with serial number '{old_cylinder_serial_number}' not found.")
+        
+    #     # Calculate the remnant
+    #     tare_weight = old_cylinder.tare_weight
+    #     total_weight = data.get('old_cylinder_total_weight')
+    #     remnant = total_weight - tare_weight
 
-        # Check if the old cylinder exists
-        if old_cylinder is None:
-            raise serializers.ValidationError("Old cylinder details are required.")
+    #     # Get the new cylinder based on the serial number
+    #     new_cylinder_serial_number = data.get('new_cylinder')
+    #     try:
+    #         new_cylinder = Cylinder.objects.get(cylinder_serial_number=new_cylinder_serial_number)
+    #     except Cylinder.DoesNotExist:
+    #         raise serializers.ValidationError(f"New cylinder with serial number '{new_cylinder_serial_number}' not found.")
+        
+    #     # Calculate the quantity billable
+    #     content_capacity = new_cylinder.capacity
+    #     quantity_billable = content_capacity - remnant
 
-        # Check if the new cylinder exists
-        try:
-            new_cylinder = Cylinder.objects.get(cylinder_serial_number=new_cylinder_serial_number)
-            attrs['new_cylinder'] = new_cylinder
-        except Cylinder.DoesNotExist:
-            raise serializers.ValidationError("New cylinder does not exist.")
+    #     # Calculate the invoice
+    #     gas_price = GasPrice.objects.latest('date_added').current_price
+    #     invoice = gas_price * quantity_billable
 
-        return attrs
+    #     data['remnant'] = remnant
+    #     data['quantity_billable'] = quantity_billable
+    #     data['invoice'] = invoice
 
+    #     return data
+
+    # class Meta:
+    #     model = RefillOrder
+    #     fields = ['old_cylinder_serial_number', 'old_cylinder_total_weight', 'new_cylinder',
+    #               'low_pressure_regulator_yards', 'high_pressure_regulator_yards',
+    #               'low_pressure_hose_yards', 'high_pressure_hose_yards',
+    #               'subsidized_cylinder_yards', 'remnant', 'quantity_billable', 'invoice']
+
+    # def validate(self, attrs):
+    #     old_cylinder = attrs.get('old_cylinder')
+    #     new_cylinder_serial_number = attrs.get('new_cylinder_serial_number')
+
+    #     # Check if the old cylinder exists
+    #     if old_cylinder is None:
+    #         raise serializers.ValidationError("Old cylinder details are required.")
+
+    #     # Check if the new cylinder exists
+    #     try:
+    #         new_cylinder = Cylinder.objects.get(cylinder_serial_number=new_cylinder_serial_number)
+    #         attrs['new_cylinder'] = new_cylinder
+    #     except Cylinder.DoesNotExist:
+    #         raise serializers.ValidationError("New cylinder does not exist.")
+
+    #     return attrs
+
+class BillableAssetsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OtherBillableAssets
+        fields = ['low_pressure_regulator_yards', 'high_pressure_regulator_yards', 'low_pressure_hose_price_per_yard', \
+        'high_pressure_hose_price_per_yard', 'subsidized_cylinder_price'] 
+
+
+# class InvoiceBreakdownSerializer(serializers.ModelSerializer):
+# 	billable_assets = BillableAssetsSerializer(source='billable_assets', read_only=True)
+# 	quantity_billable_cost = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
+# 	date_created = serializers.DateTimeField(source='invoice.date_created', read_only=True)
+
+# 	def get_billable_assets(self, obj):
+# 		return {
+# 			'low_pressure_regulator': obj.low_pressure_regulator_yards,
+# 			'high_pressure_regulator': obj.high_pressure_regulator_yards,
+# 			'low_pressure_hose': obj.low_pressure_hose_yards,
+# 			'high_pressure_hose': obj.high_pressure_hose_yards,
+# 			'subsidized_cylinder_price': obj.subsidized_cylinder_yards,
+# 		}
+
+# 	class Meta:
+# 		model = RefillOrder
+# 		fields = ['billable_assets', 'quantity_billable_cost', 'date_created']
+
+
+class InvoiceBreakdownSerializer(serializers.ModelSerializer):
+    billable_assets = BillableAssetsSerializer(read_only=True)
+    quantity_billable_cost = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
+    date_created = serializers.DateTimeField(source='invoice.date_created', read_only=True)
+
+    class Meta:
+        model = RefillOrder
+        fields = ['billable_assets', 'quantity_billable_cost', 'date_created']
+
+
+class Invoice1BreakdownSerializer(serializers.ModelSerializer):
+    billable_assets = serializers.SerializerMethodField()
+    quantity_billable_cost = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
+    date_created = serializers.DateTimeField(source='invoice.date_created', read_only=True)
+
+    def get_billable_assets(self, obj):
+        return {
+            'low_pressure_regulator': obj.low_pressure_regulator_yards,
+            'high_pressure_regulator': obj.high_pressure_regulator_yards,
+            'low_pressure_hose': obj.low_pressure_hose_yards,
+            'high_pressure_hose': obj.high_pressure_hose_yards,
+            'subsidized_cylinder_price': obj.subsidized_cylinder_yards,
+        }
+
+    def get_quantity_billable_cost(self, obj):
+        # Calculate quantity billable cost based on billable assets and gas quantity billable
+        gas_price_per_kg = obj.gas_price.current_price
+        quantity_billable = obj.new_cylinder.cylinder_capacity - obj.quantity_remaining
+        billable_assets_cost = 0
+
+        # Retrieve billable assets prices
+        other_assets = OtherBillableAssets.objects.latest('date_added')
+
+        if obj.low_pressure_regulator_yards:
+            billable_assets_cost += other_assets.low_pressure_regulator_price_per_yard * obj.low_pressure_regulator_yards
+        if obj.high_pressure_regulator_yards:
+            billable_assets_cost += other_assets.high_pressure_regulator_price_per_yard * obj.high_pressure_regulator_yards
+        if obj.low_pressure_hose_yards:
+            billable_assets_cost += other_assets.low_pressure_hose_price_per_yard * obj.low_pressure_hose_yards
+        if obj.high_pressure_hose_yards:
+            billable_assets_cost += other_assets.high_pressure_hose_price_per_yard * obj.high_pressure_hose_yards
+        if obj.subsidized_cylinder_yards:
+            billable_assets_cost += other_assets.subsidized_cylinder_price * obj.subsidized_cylinder_yards
+
+        quantity_billable_cost = gas_price_per_kg * quantity_billable + billable_assets_cost
+        return quantity_billable_cost
+
+    class Meta:
+        model = RefillOrder
+        fields = ['billable_assets', 'quantity_billable_cost', 'date_created']

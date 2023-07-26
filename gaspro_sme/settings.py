@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'notifications',
     'waitlist',
     'cards',
+    'invoice',
 
     # Dependencies
     'rest_framework',

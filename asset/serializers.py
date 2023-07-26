@@ -51,7 +51,7 @@ class CylinderListSerializer(serializers.ModelSerializer):
 class CylinderDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cylinder
-        fields = ["cylinder_serial_number", "cylinder_capacity", "cylinder_gas_content", "cylinder_tare_weight", \
+        fields = ["cylinder_serial_number", "cylinder_capacity", "cylinder_gas_content", "cylinder_status",  "cylinder_tare_weight", \
             "cylinder_total_weight", "manufacturer", "manufactured_date", "maintenance_date", "current_actor", \
               "expiry_status", "gas_content_type", "location"]
 

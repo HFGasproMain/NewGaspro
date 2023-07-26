@@ -7,7 +7,7 @@ from datetime import datetime
 
 from .models import DeliveryOfficer
 from orders.models import RefillOrder
-from .serializers import DeliveryOfficerSerializer
+from .serializers import DeliveryOfficerSerializer, DeliveryOfficerProfileSerializer
 
 
 
@@ -47,4 +47,8 @@ class DeliveryOfficerOrdersListAPIView(generics.RetrieveAPIView):
 
 
 
-
+class DeliveryOfficerProfileView(generics.RetrieveAPIView):
+    queryset = DeliveryOfficer.objects.all()
+    serializer_class = DeliveryOfficerProfileSerializer
+    lookup_field = 'pk'
+    #lookup_field = 'unique_code'

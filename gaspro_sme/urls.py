@@ -40,6 +40,7 @@ urlpatterns = [
     path('api/v2/notifications/', include('notifications.urls')),
     path('api/v2/waitlist/', include('waitlist.urls')),
     path('api/v2/cards/', include('cards.urls')),
+    path('api/v2/invoice/', include('invoice.urls')),
 
 
     # Default Auth

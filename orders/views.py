@@ -1,17 +1,20 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.utils.timezone import make_aware
 from django.utils.crypto import get_random_string
 
 import datetime
+import random
 from datetime import datetime as dt
 #from datetime import timedelta
 from .models import OnboardingOrder, RefillOrder, RefillOrderAssignDeliveryOfficer
-from asset.models import ResidentialAssignCylinder, GasPrice, OtherBillableAssets
+from asset.models import ResidentialAssignCylinder, GasPrice, OtherBillableAssets, Cylinder
 from accounts.models import User
 from delivery.models import DeliveryOfficer
 from billing.models import OrderOnboardBilling
+from invoice.models import Invoice
 from .serializers import OnboardingOrderSerializer, OnboardedOrderListSerializer, RefillOrderSerializer, RefillOrderDetailSerializer, \
-    RefillOrderAcceptSerializer, RefillOrderDeliveryAssignSerializer, RefillOrderDeliveryAcceptSerializer, RefillOrderSwapSerializer
+    RefillOrderAcceptSerializer, RefillOrderDeliveryAssignSerializer, RefillOrderDeliveryAcceptSerializer, RefillOrderSwapSerializer, \
+    UserDeliveryHistorySerializer, InvoiceBreakdownSerializer
 
 from rest_framework import generics, status
 from rest_framework.decorators import api_view, permission_classes
@@ -159,8 +162,12 @@ class RefillOrderDetailView(generics.RetrieveAPIView):
 
     def retrieve(self, request, *args, **kwargs):
         refill_order_id = self.kwargs['refill_order_id']
+
         try:
             refill_order = RefillOrder.objects.get(id=refill_order_id)
+            print(f'refill order cylinder qty remaining deets => {refill_order.quantity_remaining}')
+            print(f'tare_wieght => {refill_order.cylinder.cylinder_tare_weight}')
+            print(f'refill_order new_cylinder => {refill_order.new_cylinder}')
         except RefillOrder.DoesNotExist:
             return Response({'error': 'Refill order not found.'}, status=404)
 
@@ -213,20 +220,20 @@ class RefillOrderDeliveryAssignAPIView(generics.UpdateAPIView):
     def put(self, request, *args, **kwargs):
         refill_order = self.get_object()
         serializer = self.get_serializer(refill_order, data=request.data, partial=True)
-        print(f'refill_order => {refill_order}, {refill_order.user.lga}')
+        print(f'refill_order deets ==> {refill_order}, {refill_order.user.lga}')
 
         if serializer.is_valid():
             assigned_delivery_officer = serializer.validated_data.get('delivery_officer')
             # manager = request.user.manager  # Assuming the manager is authenticated
             ro_lga = assigned_delivery_officer.manager.business_lga
-            print(f'ro_lga : {ro_lga}')
+            print(f'delivery officer_lga : {ro_lga}')
 
             # Check if the manager's LGA matches the refill_order user's LGA
             if refill_order.user.lga == ro_lga and refill_order.status == 'approved':
                 refill_order.status = 'assigned'
                 refill_order.delivery_officer = assigned_delivery_officer
                 refill_order.save()
-                return Response({'status': 'success', 'message': 'Delivery officer assigned.'}, status=status.HTTP_200_OK)
+                return Response({'status': 'success', 'message': f'Delivery officer {assigned_delivery_officer} assigned.'}, status=status.HTTP_200_OK)
             else:
                 return Response({'status': 'error', 'message': "No available delivery officer for this order's lga!"}, status=status.HTTP_400_BAD_REQUEST)
         else:
@@ -309,7 +316,7 @@ class RefillOrderDeliveredAPIView(generics.UpdateAPIView):
         
 
 # final_phase
-class RefillOrderSwapAPIView(generics.UpdateAPIView):
+class RefillOrderSwap1APIView(generics.UpdateAPIView):
     """API view for performing bottle swap and calculating invoice"""
     queryset = RefillOrder.objects.all()
     serializer_class = RefillOrderSwapSerializer
@@ -319,21 +326,27 @@ class RefillOrderSwapAPIView(generics.UpdateAPIView):
         serializer = self.get_serializer(refill_order, data=request.data, partial=True)
         if serializer.is_valid():
             # Perform bottle swap
-            old_cylinder = refill_order.cylinder
+            old_cylinder = refill_order.old_cylinder_serial_number
+            print(f'old cylinder id in refill_order => {old_cylinder}')
             new_cylinder = refill_order.new_cylinder
 
             # Calculate remnant
-            total_weight = serializer.validated_data.get('cylinder_total_weight')
+            total_weight = serializer.validated_data.get('cylinder_total_weight') 
             tare_weight = old_cylinder.tare_weight
+            print(f'tare_weight of old cylinder => {tare_weight}')
             remnant = total_weight - tare_weight
+            print(f'this is the remnant: {remnant}')
 
             # Calculate quantity billable
             content_f = new_cylinder.capacity
+            print(f'content capacity of new cylinder => {content_f}')
             quantity_billable = content_f - remnant
+            print(f'qty billable => {quantity_billable}')
 
             # Calculate invoice
             gas_price = GasPrice.objects.latest('date_added').current_price
             invoice = gas_price * quantity_billable
+            print(f'here is the invoice => {invoice}')
 
             # Check if billable assets are required
             billable_assets = serializer.validated_data.get('billable_assets')
@@ -382,6 +395,153 @@ class RefillOrderSwapAPIView(generics.UpdateAPIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+
+class RefillOrderSwapAPIView(generics.UpdateAPIView):
+    """API view for performing bottle swap and calculating invoice"""
+    queryset = RefillOrder.objects.all()
+    serializer_class = RefillOrderSwapSerializer
+
+    def update(self, request, *args, **kwargs):
+        refill_order = self.get_object()
+        serializer = self.get_serializer(refill_order, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            # Step 1: Get total weight T of the old cylinder from the request data
+            total_weight = serializer.validated_data.get('old_cylinder_total_weight')
+            print(f'total_weight of old cylinder => {total_weight}')
+
+            # Step 2: Get the tare weight TaW of the old cylinder from the request data
+            old_cylinder = serializer.validated_data.get('old_cylinder_serial_number')
+            print(f'old cylinder => {old_cylinder}')
+            tare_weight = refill_order.cylinder.cylinder_tare_weight
+            print(f'old cylinder tare_weight => {tare_weight}')
+
+            # Step 3: Calculate remnant R of the old cylinder (R = T - TaW)
+            remnant = total_weight - tare_weight
+            print(f'remnant => {remnant}, {type(remnant)}')
+
+            # Step 4: Get the capacity C of the new cylinder
+            new_cylinder = serializer.validated_data.get('new_cylinder')
+            print(f'cylinder name => {new_cylinder}')
+            new_cylinder = Cylinder.objects.get(cylinder_serial_number=new_cylinder)
+            print(f'cylinder new initial deets => {new_cylinder},{new_cylinder.cylinder_status}')
+            new_cylinder.cylinder_status = 'assigned'
+            print(f'new cylinder capacity current deets => {new_cylinder}, {new_cylinder.cylinder_status}')
+            capacity = new_cylinder.cylinder_capacity
+            capacity = int(capacity[:-2])
+            print(f'new cylinder capacity deets => {capacity}, {type(capacity)} ')
+
+            # Step 5: Calculate gas quantity billable Qb (Qb = C - R)
+            quantity_billable = capacity - remnant
+            print(f'qty billable => #{quantity_billable}')
+
+            # Step 6: Fetch the prevailing gas price per kg (P/kg) from HQ dashboard
+            gas_price = GasPrice.objects.latest('date_added').current_price
+            print(f'current gas_price => {gas_price}')
+
+            # Step 7: Calculate the invoice amount (Invoice = P/kg * Qb)
+            invoice_amount = gas_price * quantity_billable
+            print(f'invoice to be paid => {invoice_amount}')
+
+            # Step 8: Check if there are any billable assets and calculate their cost
+            billable_assets = serializer.validated_data.get('billable_assets')
+            billable_assets_cost = 0
+            if billable_assets:
+                # Replace the following prices with the actual prices fetched from the dashboard
+                price_low_pressure_regulator = 50
+                price_high_pressure_regulator = 60
+                price_low_pressure_hose = 30
+                price_high_pressure_hose = 40
+                price_subsidized_cylinder = 100
+
+                billable_assets_cost += billable_assets.get('low_pressure_regulator', 0) * price_low_pressure_regulator
+                billable_assets_cost += billable_assets.get('high_pressure_regulator', 0) * price_high_pressure_regulator
+                billable_assets_cost += billable_assets.get('low_pressure_hose', 0) * price_low_pressure_hose
+                billable_assets_cost += billable_assets.get('high_pressure_hose', 0) * price_high_pressure_hose
+                billable_assets_cost += billable_assets.get('subsidized_cylinder', 0) * price_subsidized_cylinder
+
+            # Step 9: Calculate the total cost (total_cost = invoice_amount + billable_assets_cost)
+            print(f'total_asset_billable_cost => {billable_assets_cost}')
+            total_cost = invoice_amount + billable_assets_cost
+
+            # Step 10: Update refill order status to 'delivered'
+            refill_order.status = 'delivered'
+            refill_order.new_cylinder = new_cylinder
+            
+
+            # Step 11: Generate a unique invoice ID with 5 digits
+            invoice_id = str(random.randint(10000, 99999))
+            print(f'invoice_id => {invoice_id}')
+
+            # Step 12: Create a new invoice record
+            invoice = Invoice.objects.create(
+                invoice_id=invoice_id,
+                user=refill_order.user,
+                refill_order=refill_order,
+                invoice_amount=invoice_amount,
+                billable_assets_cost=billable_assets_cost,
+                total_cost=total_cost,
+                invoice_status='unpaid',
+            )
+
+            # Step 13: Update the residential assigned cylinder to the new cylinder
+            # residential_cylinder = ResidentialAssignCylinder.objects.get(user=refill_order.user)
+            # residential_cylinder.cylinder = serializer.validated_data.get('new_cylinder')
+            # residential_cylinder.smart_box = 
+            # residential_cylinder.save()
+
+            # Step 13: Update the residential assigned cylinder to the new cylinder
+            residential_cylinder = ResidentialAssignCylinder.objects.get(user=refill_order.user)
+            new_cylinder_serial_number = serializer.validated_data.get('new_cylinder')
+            smart_box = refill_order.smart_box
+
+            # Update the residential assigned cylinder with the new cylinder and save
+            #residential_cylinder.cylinder = new_cylinder
+            #residential_cylinder.save()
+
+            # Get the new cylinder instance
+            new_cylinder = get_object_or_404(Cylinder, cylinder_serial_number=new_cylinder_serial_number)
+            print(f'here is the cylinder instance to be saved to the residential_cylinder => {new_cylinder}')
+
+            # Create a new ResidentialAssignCylinder with the user, new_cylinder, and the existing smart_box
+            new_residential_cylinder = ResidentialAssignCylinder.objects.create(
+                user=refill_order.user,
+                cylinder=new_cylinder,
+                smart_box=smart_box
+            )
+
+            # Update the refill order
+            refill_order.save()
+
+            # Update Cylinder status to assigned
+            new_cylinder.save()
+
+            # Save the new residential cylinder
+            new_residential_cylinder.save()
+
+
+            return Response({
+                'status': 'success',
+                'message': 'Bottle swap successful',
+                'invoice_id': invoice.invoice_id,
+                'billable_assets_cost': billable_assets_cost,
+                'invoice_amount': invoice.invoice_amount
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class DeliveryHistoryByUserIdAPIView(generics.ListAPIView):
+    """API to get delivery history for a customer user by user_id"""
+    serializer_class = UserDeliveryHistorySerializer
+    #permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # Get the user_id from the URL parameter
+        user_id = self.kwargs['user_id']
+        return RefillOrder.objects.filter(user_id=user_id)
 
 
 class RefillOrderSearchAPIView(generics.ListAPIView):
@@ -453,8 +613,6 @@ class RefillOrderByDateAPIView(generics.ListAPIView):
 
 
 
-
-
 class RefillOrderAssignDeliveryOfficerCreateView(generics.CreateAPIView):
     """ API to allow RO manager assign a delivery officer to a refill order """
     queryset = RefillOrder.objects.all()
@@ -490,3 +648,12 @@ class RefillOrderAssignDeliveryOfficerCreateView(generics.CreateAPIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
                     
 
+
+class TransactionByUserIdAPIView(generics.ListAPIView):
+    """API to get transactions (invoice breakdown) for a customer user by user_id"""
+    serializer_class = InvoiceBreakdownSerializer
+
+    def get_queryset(self):
+        # Get the user_id from the URL parameter
+        user_id = self.kwargs['user_id']
+        return RefillOrder.objects.filter(user_id=user_id, status='delivered')
